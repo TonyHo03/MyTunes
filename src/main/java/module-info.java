@@ -5,6 +5,7 @@ module dk.easv.mytunes {
     requires java.sql;
     requires java.naming;
     requires java.desktop;
+    requires mp3agic;
 
 
     opens dk.easv.mytunes to javafx.fxml;
