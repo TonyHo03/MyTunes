@@ -1,14 +1,21 @@
 package dk.easv.mytunes.gui;
 
+import dk.easv.mytunes.gui.model.MyTunesModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-public class MainViewController {
-    @FXML
-    private Label welcomeText;
+public class MainViewController  {
 
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
+    private MyTunesModel myTunesModel;
+
+    public MainViewController() {
+        try {
+            myTunesModel = new MyTunesModel();
+            myTunesModel.loadSongs();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+
 }
