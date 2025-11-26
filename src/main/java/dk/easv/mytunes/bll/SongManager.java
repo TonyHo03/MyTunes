@@ -1,11 +1,14 @@
 package dk.easv.mytunes.bll;
 
+import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.dal.IMyTunesDataAccess;
 import dk.easv.mytunes.dal.MyTunesDAO_DB;
 
+import java.util.List;
+
 public class SongManager {
 
-    private MyTunesDAO_DB myTunesDAO = new MyTunesDAO_DB();
+    private IMyTunesDataAccess myTunesDAO = new MyTunesDAO_DB();
 
     public SongManager() throws Exception {}
 
@@ -13,6 +16,23 @@ public class SongManager {
 
         myTunesDAO.loadSongs();
 
+    }
+
+    public List<Song> getAllSongs() throws Exception {
+
+        return myTunesDAO.getAllSongs();
+
+    }
+
+    public void createSong(Song newSong) throws Exception {
+
+        myTunesDAO.createSong(newSong);
+
+    }
+
+    public void deleteSong(Song song) throws Exception
+    {
+        myTunesDAO.deleteSong(song.getId());
     }
 
 }

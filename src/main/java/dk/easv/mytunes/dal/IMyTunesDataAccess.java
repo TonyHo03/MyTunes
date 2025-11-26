@@ -9,11 +9,17 @@ import java.util.List;
 public interface IMyTunesDataAccess {
 
 
-    void createSong(String title, String artist, String category, Time time, String filePath) throws Exception;
+    void createSong(Song song) throws Exception;
+
+    void deleteSong(int songId) throws Exception;
 
     void loadSongs() throws Exception;
 
-    void createPlaylist() throws Exception;
+    void createPlaylist(Playlist playlist) throws Exception;
+
+    void editPlaylist(Playlist playlist) throws Exception;
+
+    void deletePlaylist(Playlist playlist) throws Exception;
 
     List<Song> getAllSongs() throws Exception;
 
