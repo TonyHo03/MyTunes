@@ -3,6 +3,7 @@ package dk.easv.mytunes.dal;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 import dk.easv.mytunes.be.Playlist;
+import dk.easv.mytunes.be.PlaylistSong;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.dal.db.DBConnector;
 
@@ -152,11 +153,13 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
     }
 
     @Override
-    public void editPlaylist(Playlist playlist) throws Exception {
+    public void editPlaylist(Playlist oldPlaylist, Playlist newplaylist) throws Exception {
         try (Connection conn = dbConnector.getConnection()){
-            System.out.println("Editing playlist " + playlist.getName());
+            System.out.println("Editing playlist " + oldPlaylist.getName());
             PreparedStatement stmt = conn.prepareStatement("UPDATE dbo.PLaylist SET Name = ? WHERE Name = ?");
-            stmt.setString(1,playlist.getName());
+            stmt.setString(1,newplaylist.getName());
+            stmt.setString(2,oldPlaylist.getName());
+
             stmt.executeUpdate();
         }
     }
@@ -169,6 +172,110 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
             stmt.setString(1,playlist.getName());
             stmt.executeUpdate();
         }
+    }
+
+    @Override
+    public List<PlaylistSong> getAllPlaylistSongs() throws Exception {
+        List<PlaylistSong> playlistSongList = new ArrayList<>();
+
+        try (Connection conn = dbConnector.getConnection()) {
+
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM dbo.SongPlaylist");
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                int Id = rs.getInt("Id");
+                int SongId  = rs.getInt("SongId");
+                int PlaylistId = rs.getInt("PlaylistId");
+
+
+                playlistSongList.add(new PlaylistSong(Id, SongId, PlaylistId));
+
+            }
+
+            return playlistSongList;
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new Exception("Could not fetch all songs.");
+
+        }
+    }
+
+    @Override
+    public List<PlaylistSong> loadPlaylistSongs() throws Exception {
+
+        File songFolder = new File(PATH_STRING);
+
+        File[] songs = songFolder.listFiles();
+
+
+
+        // Hvis der er ingen sange i mappen, så skal funktionen ikke køre.
+        if (songs == null) {
+            return null;
+        }
+
+        try (Connection conn = dbConnector.getConnection()) {
+
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM dbo.SongPlaylist",ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            ResultSet rs = stmt.executeQuery();
+
+            // Tjekker om der er overhovedet er rækker i resultset. Hvis ikke, så er der ingen sange i databasen.
+            if (!rs.next()) {
+                System.out.println("Der er INGEN sange i databasen. Indsætter alle sange.");
+
+                for (File song: songs) {
+
+                    String tempTitle = song.getName().split("\\.")[0];
+
+                    //createSong(new Song(0, tempTitle, "", "", time, song.getPath()));
+                }
+
+                return null;
+
+            } else {rs.beforeFirst();}
+
+            // Loop igennem alle sange for at tjekke om de allerede eksisterer i databasen.
+            for (File song: songs) {
+
+                int rowCount = 0;
+                int notFound = 0;
+
+                // Loop igennem resultset.
+                while (rs.next()) {
+                    rowCount++;
+
+                    String FilePath = rs.getString("FilePath");
+
+                    // Hvis sangen ikke har samme filsti som rækken i databasen, så tæller den "notFound" op.
+                    if (!song.getPath().equals(FilePath)) {
+                        notFound++;
+                    }
+                }
+
+                // Hvis true, så betyder det at sangen ikke fandtes i alle rækker af resultset.
+                if (notFound == rowCount) {
+                    System.out.println("Sangen er ikke i databasen: " + rowCount + " " + notFound);
+
+                    Time time = Time.valueOf(getDuration(song));
+                    String tempTitle = song.getName().split("\\.")[0];
+
+                    createSong(new Song(0, tempTitle, "", "", time, song.getPath()));
+                }
+
+                // Resetter resultset, så den viser den første række igen.
+                rs.beforeFirst();
+            }
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new Exception("Could not load songs.");
+        }
+        return null;
     }
 
     @Override

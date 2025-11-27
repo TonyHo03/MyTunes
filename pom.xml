@@ -24,7 +24,16 @@
       <artifactId>javafx-fxml</artifactId>
       <version>21.0.6</version>
     </dependency>
-
+      <dependency>
+          <groupId>com.mpatric</groupId>
+          <artifactId>mp3agic</artifactId>
+          <version>0.9.1</version>
+      </dependency>
+      <dependency>
+          <groupId>com.microsoft.sqlserver</groupId>
+          <artifactId>mssql-jdbc</artifactId>
+          <version>12.8.0.jre11</version> <!-- pick version matching your JDK -->
+      </dependency>
 
       <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -59,7 +68,7 @@
             <!-- Default configuration for running with: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
-              <mainClass>dk.easv.mytunes/dk.easv.mytunes.HelloApplication</mainClass>
+              <mainClass>dk.easv.mytunes/dk.easv.mytunes.Main</mainClass>
               <launcher>app</launcher>
               <jlinkZipName>app</jlinkZipName>
               <jlinkImageName>app</jlinkImageName>

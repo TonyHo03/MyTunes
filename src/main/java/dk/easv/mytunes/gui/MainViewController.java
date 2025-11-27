@@ -1,6 +1,6 @@
 package dk.easv.mytunes.gui;
 
-import dk.easv.mytunes.HelloApplication;
+import dk.easv.mytunes.Main;
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.gui.model.MyTunesModel;
@@ -22,10 +22,13 @@ import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
 
+
     private MyTunesModel myTunesModel;
 
     @FXML
     private TableView<Song> tblSongs;
+    @FXML
+    private ListView lstPlaylistSong;
     @FXML
     private TableColumn<Song, String> titleColumn, artistColumn, categoryColumn, timeColumn;
     @FXML
@@ -33,8 +36,8 @@ public class MainViewController implements Initializable {
     @FXML
     private Button btnSearch;
 
-    @FXML
-    private TableView<Playlist> tblPlaylist;
+
+    public TableView<Playlist> tblPlaylist;
     @FXML
     private TableColumn<Playlist, String> clmName;
     @FXML
@@ -75,7 +78,7 @@ public class MainViewController implements Initializable {
 
         tblSongs.setItems(myTunesModel.getObservableSongs());
         tblPlaylist.setItems(myTunesModel.getPlaylist());
-
+        lstPlaylistSong.setItems(myTunesModel.getObservableSongs());
     }
 
     @FXML
