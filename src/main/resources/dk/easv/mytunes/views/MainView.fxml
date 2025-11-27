@@ -29,7 +29,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <ListView layoutX="185.0" layoutY="150.0" prefHeight="305.0" prefWidth="162.0" />
+      <ListView fx:id="lstPlaylistSong" layoutX="185.0" layoutY="150.0" prefHeight="305.0" prefWidth="162.0" />
       <Button layoutX="385.0" layoutY="150.0" mnemonicParsing="false" style="-fx-border-radius: 0;" text="🢀" />
       <TableView fx:id="tblSongs" layoutX="456.0" layoutY="150.0" prefHeight="305.0" prefWidth="330.0">
         <columns>

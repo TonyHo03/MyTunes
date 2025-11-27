@@ -14,6 +14,7 @@ public class Playlist {
         this.duration = duration;
     }
 
+
     public int getId() {
         return id;
     }
@@ -44,4 +45,5 @@ public class Playlist {
     public void setDuration(Time Duration) {
         this.duration = Duration;
     }
+
 }
