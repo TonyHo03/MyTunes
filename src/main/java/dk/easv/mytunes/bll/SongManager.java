@@ -1,5 +1,6 @@
 package dk.easv.mytunes.bll;
 
+import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.dal.IMyTunesDataAccess;
 import dk.easv.mytunes.dal.MyTunesDAO_DB;
@@ -33,6 +34,12 @@ public class SongManager {
     public void deleteSong(Song song) throws Exception
     {
         myTunesDAO.deleteSong(song.getId());
+    }
+
+    public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
+
+        myTunesDAO.addSongToPlaylist(song, playlist);
+
     }
 
 }

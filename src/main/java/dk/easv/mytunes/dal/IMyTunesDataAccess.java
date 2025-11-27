@@ -21,6 +21,8 @@ public interface IMyTunesDataAccess {
 
     void deletePlaylist(Playlist playlist) throws Exception;
 
+    void addSongToPlaylist(Song song, Playlist playlist) throws Exception;
+
     List<Song> getAllSongs() throws Exception;
 
     List<Playlist> getAllPlaylists() throws Exception;

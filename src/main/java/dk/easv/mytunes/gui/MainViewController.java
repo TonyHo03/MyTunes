@@ -190,4 +190,20 @@ public class MainViewController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void onAddSongToPlaylistClick() {
+
+        try {
+            Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+            Playlist selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
+
+            myTunesModel.addSongToPlaylist(selectedSong, selectedPlaylist);
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+
+    }
 }

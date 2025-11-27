@@ -263,4 +263,78 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
             throw new Exception("Fejl under sletning af sang fra databasen", e);
         }
     }
+
+    @Override
+    public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
+
+        try (Connection conn = dbConnector.getConnection()) {
+
+            int songId = 0;
+            int playlistId = 0;
+            int rowCount = 0;
+
+            PreparedStatement select1 = conn.prepareStatement("SELECT Id FROM dbo.Song WHERE Title = ?");
+            select1.setString(1, song.getTitle());
+
+            PreparedStatement select2 = conn.prepareStatement("SELECT Id FROM dbo.Playlist WHERE Name = ?");
+            select2.setString(1, playlist.getName());
+
+            ResultSet rs1 = select1.executeQuery();
+            ResultSet rs2 = select2.executeQuery();
+
+            if (rs1.next()) {
+
+                songId = rs1.getInt("Id");
+
+            }
+
+            if (rs2.next()) {
+
+                playlistId = rs2.getInt("Id");
+
+            }
+
+            PreparedStatement setCondition = conn.prepareStatement("SELECT * FROM dbo.SongPlaylist WHERE SongId = ? AND PlaylistId = ?");
+            setCondition.setInt(1, songId);
+            setCondition.setInt(2, playlistId);
+            
+            ResultSet condition = setCondition.executeQuery();
+
+            if (condition.next()) {
+                System.out.println("Sang findes allerede i playlisten.");
+                return;
+            }
+
+            PreparedStatement add = conn.prepareStatement("INSERT INTO dbo.SongPlaylist (SongId, PlaylistId) VALUES (?, ?)");
+            add.setInt(1, songId);
+            add.setInt(2, playlistId);
+
+            add.execute();
+
+
+            PreparedStatement selectAmount = conn.prepareStatement("SELECT * FROM dbo.SongPlaylist WHERE PlaylistId = ?");
+            selectAmount.setInt(1, playlistId);
+
+            ResultSet rs3 = selectAmount.executeQuery();
+
+            while (rs3.next()) {
+
+                rowCount++;
+
+            }
+
+            PreparedStatement updatePlaylist = conn.prepareStatement("UPDATE dbo.Playlist SET Songs = ? WHERE Id = ?");
+            updatePlaylist.setInt(1, rowCount);
+            updatePlaylist.setInt(2, playlistId);
+
+            int rowsAffected = updatePlaylist.executeUpdate();
+
+
+        } catch (SQLException e) {
+
+            throw new Exception("Could not create song.", e);
+
+        }
+
+    }
 }

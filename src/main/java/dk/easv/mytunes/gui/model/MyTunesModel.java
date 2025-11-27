@@ -61,4 +61,12 @@ public class MyTunesModel {
         return playlistObservableList;
     }
 
+    public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
+
+        songManager.addSongToPlaylist(song, playlist);
+
+        playlistObservableList.setAll(playlistManager.getAllPlaylists());
+
+    }
+
 }
