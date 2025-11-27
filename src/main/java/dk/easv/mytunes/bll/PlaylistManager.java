@@ -24,8 +24,8 @@ public class PlaylistManager {
     public List<Playlist> getAllPlaylists() throws Exception {
         return myTunesDAO.getAllPlaylists();
     }
-    public List<PlaylistSong> getAllPlaylistSongs() throws Exception {
-        return myTunesDAO.getAllPlaylistSongs();
+    public List<Song> getAllSongsFromPlaylist(Playlist playlist) throws Exception {
+        return myTunesDAO.getAllSongsFromPlaylist(playlist);
     }
     public void loadPlaylistSongs() throws Exception {
         myTunesDAO.loadPlaylistSongs();

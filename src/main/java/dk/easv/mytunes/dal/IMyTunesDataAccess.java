@@ -27,7 +27,7 @@ public interface IMyTunesDataAccess {
 
     List<Playlist> getAllPlaylists() throws Exception;
 
-    List<PlaylistSong> getAllPlaylistSongs() throws Exception;
+    List<Song> getAllSongsFromPlaylist(Playlist playlist) throws Exception;
 
     List<PlaylistSong> loadPlaylistSongs() throws Exception;
 }

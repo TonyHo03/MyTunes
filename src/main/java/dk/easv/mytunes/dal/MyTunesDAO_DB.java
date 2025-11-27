@@ -168,33 +168,84 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
     public void  deletePlaylist(Playlist playlist) throws Exception {
         try (Connection conn = dbConnector.getConnection()){
             System.out.println("Deleting playlist " + playlist.getName());
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM dbo.PLaylist WHERE Name = ?");
-            stmt.setString(1,playlist.getName());
-            stmt.executeUpdate();
+            int playlistId = 0;
+
+            PreparedStatement stmt1 = conn.prepareStatement("SELECT Id FROM dbo.Playlist WHERE Name = ?");
+            stmt1.setString(1,playlist.getName());
+            ResultSet rs1 = stmt1.executeQuery();
+
+            if (rs1.next()) {
+                playlistId = rs1.getInt("Id");
+            }
+
+            PreparedStatement stmt2 = conn.prepareStatement("DELETE FROM dbo.SongPlaylist WHERE PlaylistId = ?");
+            stmt2.setInt(1, playlistId);
+            stmt2.executeUpdate();
+
+            PreparedStatement stmt3 = conn.prepareStatement("DELETE FROM dbo.PLaylist WHERE Id = ?");
+            stmt3.setInt(1, playlistId);
+            stmt3.executeUpdate();
+
         }
     }
 
     @Override
-    public List<PlaylistSong> getAllPlaylistSongs() throws Exception {
-        List<PlaylistSong> playlistSongList = new ArrayList<>();
+    public List<Song> getAllSongsFromPlaylist(Playlist playlist) throws Exception {
+        List<Song> songList = new ArrayList<>();
+
+        int playlistId = 0;
+        List<Integer> songIds = new ArrayList<>();
+
+        if (playlist == null) {return songList;}
 
         try (Connection conn = dbConnector.getConnection()) {
 
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM dbo.SongPlaylist");
+            PreparedStatement ps = conn.prepareStatement("SELECT Id FROM dbo.Playlist WHERE Name = ?");
+            ps.setString(1, playlist.getName());
             ResultSet rs = ps.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
+                playlistId = rs.getInt("Id");
+                System.out.println("playlistId: " + playlistId);
+            }
 
-                int Id = rs.getInt("Id");
-                int SongId  = rs.getInt("SongId");
-                int PlaylistId = rs.getInt("PlaylistId");
+            PreparedStatement ps2 = conn.prepareStatement("SELECT SongId FROM dbo.SongPlaylist WHERE PlaylistId = ?");
+            ps2.setInt(1, playlistId);
+            ResultSet rs2 = ps2.executeQuery();
 
+            while (rs2.next()) {
 
-                playlistSongList.add(new PlaylistSong(Id, SongId, PlaylistId));
+                int SongId  = rs2.getInt("SongId");
+                System.out.println("SongId: " + SongId);
+
+                songIds.add(SongId);
 
             }
 
-            return playlistSongList;
+            PreparedStatement ps3 = conn.prepareStatement("SELECT * FROM dbo.Song");
+            ResultSet rs3 = ps3.executeQuery();
+
+            while (rs3.next()) {
+
+                String Title = rs3.getString("Title");
+                String Artist = rs3.getString("Artist");
+                String Category = rs3.getString("Category");
+                Time Duration = rs3.getTime("Duration");
+                String FilePath = rs3.getString("FilePath");
+
+
+                for (int songId : songIds) {
+
+                    if(songId == rs3.getInt("Id")) {
+                        System.out.println("Song added");
+                        songList.add(new Song(songId, Title, Artist, Category, Duration, FilePath));
+
+                    }
+
+                }
+            }
+
+            return songList;
 
         } catch (SQLException e) {
 
