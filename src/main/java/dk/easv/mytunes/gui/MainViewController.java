@@ -28,7 +28,7 @@ public class MainViewController implements Initializable {
     @FXML
     private TableView<Song> tblSongs;
     @FXML
-    private ListView lstPlaylistSong;
+    private ListView<String> lstPlaylistSong;
     @FXML
     private TableColumn<Song, String> titleColumn, artistColumn, categoryColumn, timeColumn;
     @FXML
@@ -78,7 +78,21 @@ public class MainViewController implements Initializable {
 
         tblSongs.setItems(myTunesModel.getObservableSongs());
         tblPlaylist.setItems(myTunesModel.getPlaylist());
-        lstPlaylistSong.setItems(myTunesModel.getObservableSongs());
+
+        tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+
+            try {
+                lstPlaylistSong.getItems().clear();
+                for (Song song : myTunesModel.getSongObservableList2(newValue)) {
+                    lstPlaylistSong.getItems().add(song.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+
+        //lstPlaylistSong.setItems(myTunesModel.getObservableSongs());
     }
 
     @FXML

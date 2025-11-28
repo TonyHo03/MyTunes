@@ -26,4 +26,10 @@ public class PlaylistSong {
     {
         return playlistId;
     }
+
+    @Override
+    public String toString()
+    {
+        return getSongId() + "\t" + getPlaylistId();
+    }
 }

@@ -76,4 +76,9 @@ public class Song {
         this.filePath = FilePath;
     }
 
+    @Override
+    public String toString() {
+        return getTitle();
+    }
+
 }
