@@ -25,23 +25,34 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
 
     @Override
     public void createSong(Song song) throws Exception {
+        String sql = "INSERT INTO dbo.Song (Title, Artist, Category, Duration, FilePath) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = dbConnector.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); {
 
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO dbo.Song (Title, Artist, Category, Duration, FilePath) VALUES (?, ?, ?, ?, ?)");
             ps.setString(1, song.getTitle());
             ps.setString(2, song.getArtist());
             ps.setString(3, song.getCategory());
             ps.setTime(4, song.getDuration());
             ps.setString(5, song.getFilePath());
 
-            ps.execute();
+            ps.executeUpdate();
 
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                int generatedId = rs.getInt(1);
+                 try {
+                     java.lang.reflect.Method setIdMethod = Song.class.getDeclaredMethod("setId", int.class);
+                     setIdMethod.setAccessible(true);
+                     setIdMethod.invoke(song, generatedId);
+                 } catch (Exception e) {
+                     throw new Exception("Kunne ikke opdatere Song-ID", e);
+                 }
+            }
+            }
         } catch (SQLException e) {
-
             e.printStackTrace();
             throw new Exception("Could not create song.");
-
         }
     }
 
@@ -51,8 +62,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
         File songFolder = new File(PATH_STRING);
 
         File[] songs = songFolder.listFiles();
-
-
 
         // Hvis der er ingen sange i mappen, så skal funktionen ikke køre.
         if (songs == null) {
@@ -72,7 +81,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
                 for (File song: songs) {
                     String timeString = getDuration(song);
                     Time time = java.sql.Time.valueOf(timeString);
-
 
                     String tempTitle = song.getName().split("\\.")[0];
 
@@ -149,7 +157,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
             e.printStackTrace();
             throw new Exception("Could not create playlist.");
         }
-
     }
 
     @Override

@@ -81,4 +81,7 @@ public class Song {
         return getTitle();
     }
 
+    public void setId(int generatedId) {
+        this.id = generatedId;
+    }
 }
