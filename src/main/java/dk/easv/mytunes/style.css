@@ -1,0 +1,23 @@
+.play-button {
+    -fx-text-fill: gray;
+    -fx-font-weight: bold;
+    -fx-background-radius: 50;
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-max-width: 32px;
+    -fx-max-height: 32px;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+}
+
+.fastforward-button {
+    -fx-text-fill: gray;
+    -fx-font-weight: bold;
+    -fx-background-radius: 50;
+    -fx-min-width: 24px;
+    -fx-min-height: 24px;
+    -fx-max-width: 24px;
+    -fx-max-height: 24px;
+    -fx-alignment: center;
+    -fx-cursor: hand;
+}
