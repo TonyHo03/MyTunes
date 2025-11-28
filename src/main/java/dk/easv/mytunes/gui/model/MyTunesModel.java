@@ -81,4 +81,13 @@ public class MyTunesModel {
 
     }
 
+    public void deleteSongFromPlaylist(String song, String playlist) throws Exception {
+        songManager.deleteSongFromPlaylist(song, playlist);
+        playlistObservableList.setAll(playlistManager.getAllPlaylists());
+    }
+
+    public void editSong(Song selectedSong, Song newSong) throws Exception{
+        songManager.editSong(selectedSong, newSong);
+    }
+
 }

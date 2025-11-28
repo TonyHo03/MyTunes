@@ -47,8 +47,15 @@ public class MainViewController implements Initializable {
 
     @FXML
     private DialogPane newSongUIPopUp;
+
+    @FXML
+    private DialogPane editSongUIPopUp;
     @FXML
     private TextField txtTitle, txtArtist, txtTime, txtFile;
+    @FXML
+    private TextField txtNewTitle, txtNewArtist, txtNewTime, txtNewFile;
+    @FXML
+    private ChoiceBox<String> txtNewCategory;
     @FXML
     private ChoiceBox<String> txtCategory;
 
@@ -227,6 +234,67 @@ public class MainViewController implements Initializable {
             e.printStackTrace();
 
         }
+
+    }
+
+    public void onDeleteSongPlaylistClick() {
+        try {
+            String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+            String selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem().getName();
+
+            myTunesModel.deleteSongFromPlaylist(selectedSong, selectedPlaylist);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void onUpBtnClick() {
+
+        String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+        int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
+        int newIndex = (previousIndex > 0) ? previousIndex - 1 : 0;
+
+        lstPlaylistSong.getItems().remove(previousIndex);
+        lstPlaylistSong.getItems().add(newIndex, selectedSong);
+
+        lstPlaylistSong.getSelectionModel().select(newIndex);
+
+        lstPlaylistSong.refresh();
+
+    }
+
+    @FXML
+    private void onDownBtnClick() {
+        String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+        int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
+        int newIndex = (previousIndex < lstPlaylistSong.getItems().size() - 1) ? previousIndex + 1 : lstPlaylistSong.getItems().size() - 1;
+
+        lstPlaylistSong.getItems().remove(previousIndex);
+        lstPlaylistSong.getItems().add(newIndex, selectedSong);
+
+        lstPlaylistSong.getSelectionModel().select(newIndex);
+
+        lstPlaylistSong.refresh();
+    }
+
+
+    public void onBtnEditSongCancel(ActionEvent actionEvent) {
+        editSongUIPopUp.setVisible(false);
+    }
+
+    public void onBtnEditSongSave(ActionEvent actionEvent) throws Exception {
+        Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+        Song newSong = new Song(txtNewTitle.getText(), txtNewArtist.getText(), txtNewCategory.getValue(), Time.valueOf(txtNewTime.getText()), txtNewFile.getText());
+
+        myTunesModel.editSong(selectedSong, newSong);
+        editSongUIPopUp.setVisible(false);
+
+    }
+
+    public void onBtnEditSong(ActionEvent actionEvent) {
+        editSongUIPopUp.setVisible(true);
 
     }
 }

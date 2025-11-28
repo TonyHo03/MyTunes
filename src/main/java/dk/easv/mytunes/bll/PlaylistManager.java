@@ -1,7 +1,6 @@
 package dk.easv.mytunes.bll;
 
 import dk.easv.mytunes.be.Playlist;
-import dk.easv.mytunes.be.PlaylistSong;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.dal.MyTunesDAO_DB;
 

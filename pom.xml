@@ -46,6 +46,11 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>  </dependencies>
+    <dependency>
+        <groupId>com.microsoft.sqlserver</groupId>
+        <artifactId>mssql-jdbc</artifactId>
+        <version>12.8.0.jre11</version> <!-- pick version matching your JDK -->
+    </dependency>
 
   <build>
     <plugins>
