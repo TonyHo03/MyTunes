@@ -179,16 +179,22 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void deleteSong(ActionEvent event) throws Exception {
-        Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-        if (selectedSong != null) {
-            try
-            {
-                myTunesModel.deleteSong(selectedSong);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/dk/easv/mytunes/views/DeleteSongView.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = new Stage();
+        stage.setTitle("Delete song confirmation");
+        stage.setScene(scene);
+
+        DeleteSongViewController controller = fxmlLoader.getController();
+        controller.setParentController(this);
+        controller.setSongToDelete(tblSongs.getSelectionModel().getSelectedItem());
+        controller.setModel(myTunesModel);
+        controller.setStage(stage);
+
+        stage.show();
     }
+
+
 
     @FXML
     private void onBtnCancel(ActionEvent actionEvent) {
@@ -224,21 +230,45 @@ public class MainViewController implements Initializable {
 
     }
 
-    @FXML
-    private void onBtnEditSong(ActionEvent actionEvent) {
+    public void onDeleteSongPlaylistClick() {
+        try {
+            String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+            String selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem().getName();
 
+            myTunesModel.deleteSongFromPlaylist(selectedSong, selectedPlaylist);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void onUpBtnClick() {
+
+        String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+        int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
+        int newIndex = (previousIndex > 0) ? previousIndex - 1 : 0;
+
+        lstPlaylistSong.getItems().remove(previousIndex);
+        lstPlaylistSong.getItems().add(newIndex, selectedSong);
+
+        lstPlaylistSong.getSelectionModel().select(newIndex);
+
+        lstPlaylistSong.refresh();
 
     }
 
     @FXML
-    private void onBtnEditSongCancel(ActionEvent actionEvent) {
+    private void onDownBtnClick() {
+        String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+        int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
+        int newIndex = (previousIndex < lstPlaylistSong.getItems().size() - 1) ? previousIndex + 1 : lstPlaylistSong.getItems().size() - 1;
 
+        lstPlaylistSong.getItems().remove(previousIndex);
+        lstPlaylistSong.getItems().add(newIndex, selectedSong);
 
-    }
+        lstPlaylistSong.getSelectionModel().select(newIndex);
 
-    @FXML
-    private void onBtnEditSongSave(ActionEvent actionEvent) {
-
-
+        lstPlaylistSong.refresh();
     }
 }
