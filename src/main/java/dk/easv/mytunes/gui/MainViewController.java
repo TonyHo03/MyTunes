@@ -28,7 +28,7 @@ public class MainViewController implements Initializable {
     @FXML
     private TableView<Song> tblSongs;
     @FXML
-    private ListView lstPlaylistSong;
+    private ListView<String> lstPlaylistSong;
     @FXML
     private TableColumn<Song, String> titleColumn, artistColumn, categoryColumn, timeColumn;
     @FXML
@@ -78,7 +78,21 @@ public class MainViewController implements Initializable {
 
         tblSongs.setItems(myTunesModel.getObservableSongs());
         tblPlaylist.setItems(myTunesModel.getPlaylist());
-        lstPlaylistSong.setItems(myTunesModel.getObservableSongs());
+
+        tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+
+            try {
+                lstPlaylistSong.getItems().clear();
+                for (Song song : myTunesModel.getSongObservableList2(newValue)) {
+                    lstPlaylistSong.getItems().add(song.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+
+        //lstPlaylistSong.setItems(myTunesModel.getObservableSongs());
     }
 
     @FXML
@@ -165,16 +179,22 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void deleteSong(ActionEvent event) throws Exception {
-        Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-        if (selectedSong != null) {
-            try
-            {
-                myTunesModel.deleteSong(selectedSong);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/dk/easv/mytunes/views/DeleteSongView.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = new Stage();
+        stage.setTitle("Delete song confirmation");
+        stage.setScene(scene);
+
+        DeleteSongViewController controller = fxmlLoader.getController();
+        controller.setParentController(this);
+        controller.setSongToDelete(tblSongs.getSelectionModel().getSelectedItem());
+        controller.setModel(myTunesModel);
+        controller.setStage(stage);
+
+        stage.show();
     }
+
+
 
     @FXML
     private void onBtnCancel(ActionEvent actionEvent) {

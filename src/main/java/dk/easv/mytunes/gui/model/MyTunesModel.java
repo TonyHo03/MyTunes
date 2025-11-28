@@ -20,7 +20,6 @@ public class MyTunesModel {
         songObservableList2 = FXCollections.observableArrayList();
         playlistObservableList = FXCollections.observableArrayList();
         songObservableList.addAll(songManager.getAllSongs());
-        songObservableList2.addAll(songManager.getAllSongs());
         playlistObservableList.addAll(playlistManager.getAllPlaylists());
     }
 
@@ -69,7 +68,8 @@ public class MyTunesModel {
         songManager.loadSongs();
     }
 
-    public ObservableList<Song> getSongObservableList2() {
+    public ObservableList<Song> getSongObservableList2(Playlist playlist) throws Exception {
+        songObservableList2.setAll(playlistManager.getAllSongsFromPlaylist(playlist));;
         return songObservableList2;
     }
 

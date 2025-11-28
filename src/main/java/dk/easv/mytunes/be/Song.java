@@ -76,4 +76,12 @@ public class Song {
         this.filePath = FilePath;
     }
 
+    @Override
+    public String toString() {
+        return getTitle();
+    }
+
+    public void setId(int generatedId) {
+        this.id = generatedId;
+    }
 }
