@@ -398,9 +398,15 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
         String sql = "DELETE FROM dbo.Song WHERE Id = ?";
 
         try (Connection conn = dbConnector.getConnection()) {
+
+            PreparedStatement delete = conn.prepareStatement("DELETE FROM dbo.SongPlaylist WHERE SongId = ?");
+            delete.setInt(1, songId);
+            int rowsAffected2 = delete.executeUpdate();
+
             PreparedStatement select = conn.prepareStatement("Select * FROM dbo.song where id = ?");
             select.setInt(1, songId);
             ResultSet rs = select.executeQuery();
+
 
             while(rs.next()){
                 File song = new File(rs.getString("FilePath"));
@@ -455,7 +461,7 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
             PreparedStatement setCondition = conn.prepareStatement("SELECT * FROM dbo.SongPlaylist WHERE SongId = ? AND PlaylistId = ?");
             setCondition.setInt(1, songId);
             setCondition.setInt(2, playlistId);
-            
+
             ResultSet condition = setCondition.executeQuery();
 
             if (condition.next()) {
