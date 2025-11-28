@@ -241,4 +241,34 @@ public class MainViewController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    private void onUpBtnClick() {
+
+        String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+        int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
+        int newIndex = (previousIndex > 0) ? previousIndex - 1 : 0;
+
+        lstPlaylistSong.getItems().remove(previousIndex);
+        lstPlaylistSong.getItems().add(newIndex, selectedSong);
+
+        lstPlaylistSong.getSelectionModel().select(newIndex);
+
+        lstPlaylistSong.refresh();
+
+    }
+
+    @FXML
+    private void onDownBtnClick() {
+        String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+        int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
+        int newIndex = (previousIndex < lstPlaylistSong.getItems().size() - 1) ? previousIndex + 1 : lstPlaylistSong.getItems().size() - 1;
+
+        lstPlaylistSong.getItems().remove(previousIndex);
+        lstPlaylistSong.getItems().add(newIndex, selectedSong);
+
+        lstPlaylistSong.getSelectionModel().select(newIndex);
+
+        lstPlaylistSong.refresh();
+    }
 }
