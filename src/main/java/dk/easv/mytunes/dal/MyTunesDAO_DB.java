@@ -3,6 +3,7 @@ package dk.easv.mytunes.dal;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 import dk.easv.mytunes.be.Playlist;
+import dk.easv.mytunes.be.PlaylistSong;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.dal.db.DBConnector;
 
@@ -152,11 +153,13 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
     }
 
     @Override
-    public void editPlaylist(Playlist playlist) throws Exception {
+    public void editPlaylist(Playlist oldPlaylist, Playlist newplaylist) throws Exception {
         try (Connection conn = dbConnector.getConnection()){
-            System.out.println("Editing playlist " + playlist.getName());
+            System.out.println("Editing playlist " + oldPlaylist.getName());
             PreparedStatement stmt = conn.prepareStatement("UPDATE dbo.PLaylist SET Name = ? WHERE Name = ?");
-            stmt.setString(1,playlist.getName());
+            stmt.setString(1,newplaylist.getName());
+            stmt.setString(2,oldPlaylist.getName());
+
             stmt.executeUpdate();
         }
     }
@@ -165,10 +168,165 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
     public void  deletePlaylist(Playlist playlist) throws Exception {
         try (Connection conn = dbConnector.getConnection()){
             System.out.println("Deleting playlist " + playlist.getName());
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM dbo.PLaylist WHERE Name = ?");
-            stmt.setString(1,playlist.getName());
-            stmt.executeUpdate();
+            int playlistId = 0;
+
+            PreparedStatement stmt1 = conn.prepareStatement("SELECT Id FROM dbo.Playlist WHERE Name = ?");
+            stmt1.setString(1,playlist.getName());
+            ResultSet rs1 = stmt1.executeQuery();
+
+            if (rs1.next()) {
+                playlistId = rs1.getInt("Id");
+            }
+
+            PreparedStatement stmt2 = conn.prepareStatement("DELETE FROM dbo.SongPlaylist WHERE PlaylistId = ?");
+            stmt2.setInt(1, playlistId);
+            stmt2.executeUpdate();
+
+            PreparedStatement stmt3 = conn.prepareStatement("DELETE FROM dbo.PLaylist WHERE Id = ?");
+            stmt3.setInt(1, playlistId);
+            stmt3.executeUpdate();
+
         }
+    }
+
+    @Override
+    public List<Song> getAllSongsFromPlaylist(Playlist playlist) throws Exception {
+        List<Song> songList = new ArrayList<>();
+
+        int playlistId = 0;
+        List<Integer> songIds = new ArrayList<>();
+
+        if (playlist == null) {return songList;}
+
+        try (Connection conn = dbConnector.getConnection()) {
+
+            PreparedStatement ps = conn.prepareStatement("SELECT Id FROM dbo.Playlist WHERE Name = ?");
+            ps.setString(1, playlist.getName());
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                playlistId = rs.getInt("Id");
+                System.out.println("playlistId: " + playlistId);
+            }
+
+            PreparedStatement ps2 = conn.prepareStatement("SELECT SongId FROM dbo.SongPlaylist WHERE PlaylistId = ?");
+            ps2.setInt(1, playlistId);
+            ResultSet rs2 = ps2.executeQuery();
+
+            while (rs2.next()) {
+
+                int SongId  = rs2.getInt("SongId");
+                System.out.println("SongId: " + SongId);
+
+                songIds.add(SongId);
+
+            }
+
+            PreparedStatement ps3 = conn.prepareStatement("SELECT * FROM dbo.Song");
+            ResultSet rs3 = ps3.executeQuery();
+
+            while (rs3.next()) {
+
+                String Title = rs3.getString("Title");
+                String Artist = rs3.getString("Artist");
+                String Category = rs3.getString("Category");
+                Time Duration = rs3.getTime("Duration");
+                String FilePath = rs3.getString("FilePath");
+
+
+                for (int songId : songIds) {
+
+                    if(songId == rs3.getInt("Id")) {
+                        System.out.println("Song added");
+                        songList.add(new Song(songId, Title, Artist, Category, Duration, FilePath));
+
+                    }
+
+                }
+            }
+
+            return songList;
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new Exception("Could not fetch all songs.");
+
+        }
+    }
+
+    @Override
+    public List<PlaylistSong> loadPlaylistSongs() throws Exception {
+
+        File songFolder = new File(PATH_STRING);
+
+        File[] songs = songFolder.listFiles();
+
+
+
+        // Hvis der er ingen sange i mappen, så skal funktionen ikke køre.
+        if (songs == null) {
+            return null;
+        }
+
+        try (Connection conn = dbConnector.getConnection()) {
+
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM dbo.SongPlaylist",ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+            ResultSet rs = stmt.executeQuery();
+
+            // Tjekker om der er overhovedet er rækker i resultset. Hvis ikke, så er der ingen sange i databasen.
+            if (!rs.next()) {
+                System.out.println("Der er INGEN sange i databasen. Indsætter alle sange.");
+
+                for (File song: songs) {
+
+                    String tempTitle = song.getName().split("\\.")[0];
+
+                    //createSong(new Song(0, tempTitle, "", "", time, song.getPath()));
+                }
+
+                return null;
+
+            } else {rs.beforeFirst();}
+
+            // Loop igennem alle sange for at tjekke om de allerede eksisterer i databasen.
+            for (File song: songs) {
+
+                int rowCount = 0;
+                int notFound = 0;
+
+                // Loop igennem resultset.
+                while (rs.next()) {
+                    rowCount++;
+
+                    String FilePath = rs.getString("FilePath");
+
+                    // Hvis sangen ikke har samme filsti som rækken i databasen, så tæller den "notFound" op.
+                    if (!song.getPath().equals(FilePath)) {
+                        notFound++;
+                    }
+                }
+
+                // Hvis true, så betyder det at sangen ikke fandtes i alle rækker af resultset.
+                if (notFound == rowCount) {
+                    System.out.println("Sangen er ikke i databasen: " + rowCount + " " + notFound);
+
+                    Time time = Time.valueOf(getDuration(song));
+                    String tempTitle = song.getName().split("\\.")[0];
+
+                    createSong(new Song(0, tempTitle, "", "", time, song.getPath()));
+                }
+
+                // Resetter resultset, så den viser den første række igen.
+                rs.beforeFirst();
+            }
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+            throw new Exception("Could not load songs.");
+        }
+        return null;
     }
 
     @Override
@@ -240,9 +398,15 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
         String sql = "DELETE FROM dbo.Song WHERE Id = ?";
 
         try (Connection conn = dbConnector.getConnection()) {
+
+            PreparedStatement delete = conn.prepareStatement("DELETE FROM dbo.SongPlaylist WHERE SongId = ?");
+            delete.setInt(1, songId);
+            int rowsAffected2 = delete.executeUpdate();
+
             PreparedStatement select = conn.prepareStatement("Select * FROM dbo.song where id = ?");
             select.setInt(1, songId);
             ResultSet rs = select.executeQuery();
+
 
             while(rs.next()){
                 File song = new File(rs.getString("FilePath"));
@@ -297,7 +461,7 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
             PreparedStatement setCondition = conn.prepareStatement("SELECT * FROM dbo.SongPlaylist WHERE SongId = ? AND PlaylistId = ?");
             setCondition.setInt(1, songId);
             setCondition.setInt(2, playlistId);
-            
+
             ResultSet condition = setCondition.executeQuery();
 
             if (condition.next()) {
@@ -336,5 +500,44 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
 
         }
 
+    }
+    public void deleteSongFromPlaylist(String song, String playlist) throws Exception {
+        String sql = "DELETE FROM dbo.SongPlaylist WHERE SongId = ? and PlaylistId = ?";
+
+        try (Connection conn = dbConnector.getConnection()) {
+
+            int songId = 0;
+            int playlistId = 0;
+            int rowCount = 0;
+
+            PreparedStatement select1 = conn.prepareStatement("SELECT Id FROM dbo.Song WHERE Title = ?");
+            select1.setString(1, song);
+
+            PreparedStatement select2 = conn.prepareStatement("SELECT Id FROM dbo.Playlist WHERE Name = ?");
+            select2.setString(1, playlist);
+
+            ResultSet rs1 = select1.executeQuery();
+            ResultSet rs2 = select2.executeQuery();
+
+            if (rs1.next()) {
+
+                songId = rs1.getInt("Id");
+
+            }
+
+            if (rs2.next()) {
+
+                playlistId = rs2.getInt("Id");
+
+            }
+
+            PreparedStatement delete = conn.prepareStatement(sql);
+            delete.setInt(1, songId);
+            delete.setInt(2, playlistId);
+            delete.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new Exception("Fejl under sletning af sang fra databasen", e);
+        }
     }
 }

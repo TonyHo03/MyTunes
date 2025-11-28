@@ -1,6 +1,6 @@
 package dk.easv.mytunes.gui;
 
-import dk.easv.mytunes.HelloApplication;
+import dk.easv.mytunes.Main;
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.gui.model.MyTunesModel;
@@ -22,10 +22,13 @@ import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
 
+
     private MyTunesModel myTunesModel;
 
     @FXML
     private TableView<Song> tblSongs;
+    @FXML
+    private ListView<String> lstPlaylistSong;
     @FXML
     private TableColumn<Song, String> titleColumn, artistColumn, categoryColumn, timeColumn;
     @FXML
@@ -33,8 +36,8 @@ public class MainViewController implements Initializable {
     @FXML
     private Button btnSearch;
 
-    @FXML
-    private TableView<Playlist> tblPlaylist;
+
+    public TableView<Playlist> tblPlaylist;
     @FXML
     private TableColumn<Playlist, String> clmName;
     @FXML
@@ -76,6 +79,20 @@ public class MainViewController implements Initializable {
         tblSongs.setItems(myTunesModel.getObservableSongs());
         tblPlaylist.setItems(myTunesModel.getPlaylist());
 
+        tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+
+            try {
+                lstPlaylistSong.getItems().clear();
+                for (Song song : myTunesModel.getSongObservableList2(newValue)) {
+                    lstPlaylistSong.getItems().add(song.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        });
+
+        //lstPlaylistSong.setItems(myTunesModel.getObservableSongs());
     }
 
     @FXML
@@ -162,16 +179,22 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void deleteSong(ActionEvent event) throws Exception {
-        Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-        if (selectedSong != null) {
-            try
-            {
-                myTunesModel.deleteSong(selectedSong);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/dk/easv/mytunes/views/DeleteSongView.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = new Stage();
+        stage.setTitle("Delete song confirmation");
+        stage.setScene(scene);
+
+        DeleteSongViewController controller = fxmlLoader.getController();
+        controller.setParentController(this);
+        controller.setSongToDelete(tblSongs.getSelectionModel().getSelectedItem());
+        controller.setModel(myTunesModel);
+        controller.setStage(stage);
+
+        stage.show();
     }
+
+
 
     @FXML
     private void onBtnCancel(ActionEvent actionEvent) {
@@ -205,5 +228,17 @@ public class MainViewController implements Initializable {
 
         }
 
+    }
+
+    public void onDeleteSongPlaylistClick() {
+        try {
+            String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+            String selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem().getName();
+
+            myTunesModel.deleteSongFromPlaylist(selectedSong, selectedPlaylist);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
