@@ -21,6 +21,8 @@ public interface IMyTunesDataAccess {
 
     void deletePlaylist(Playlist playlist) throws Exception;
 
+    void editSong(Song selectedSong, Song newSong) throws Exception;
+
     void addSongToPlaylist(Song song, Playlist playlist) throws Exception;
 
     void deleteSongFromPlaylist(String song, String playlist) throws Exception;

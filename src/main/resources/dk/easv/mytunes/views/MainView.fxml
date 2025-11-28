@@ -273,12 +273,12 @@
                         </HBox>
                         <HBox prefHeight="30.0" prefWidth="446.0">
                            <children>
-                              <Button fx:id="btnCancel1" mnemonicParsing="false" onAction="#onBtnEditSongCancel" prefHeight="25.0" prefWidth="60.0" text="Cancel">
+                              <Button fx:id="btnCancelEditSong" mnemonicParsing="false" onAction="#onBtnEditSongCancel" prefHeight="25.0" prefWidth="60.0" text="Cancel">
                                  <HBox.margin>
                                     <Insets left="310.0" top="10.0" />
                                  </HBox.margin>
                               </Button>
-                              <Button fx:id="btnSave1" mnemonicParsing="false" onAction="#onBtnEditSongSave" prefHeight="25.0" prefWidth="50.0" text="Save">
+                              <Button fx:id="btnEditSongSave" mnemonicParsing="false" onAction="#onBtnEditSongSave" prefHeight="25.0" prefWidth="50.0" text="Save">
                                  <HBox.margin>
                                     <Insets left="10.0" top="10.0" />
                                  </HBox.margin>

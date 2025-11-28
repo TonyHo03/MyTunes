@@ -47,8 +47,15 @@ public class MainViewController implements Initializable {
 
     @FXML
     private DialogPane newSongUIPopUp;
+
+    @FXML
+    private DialogPane editSongUIPopUp;
     @FXML
     private TextField txtTitle, txtArtist, txtTime, txtFile;
+    @FXML
+    private TextField txtNewTitle, txtNewArtist, txtNewTime, txtNewFile;
+    @FXML
+    private ChoiceBox<String> txtNewCategory;
     @FXML
     private ChoiceBox<String> txtCategory;
 
@@ -270,5 +277,24 @@ public class MainViewController implements Initializable {
         lstPlaylistSong.getSelectionModel().select(newIndex);
 
         lstPlaylistSong.refresh();
+    }
+
+
+    public void onBtnEditSongCancel(ActionEvent actionEvent) {
+        editSongUIPopUp.setVisible(false);
+    }
+
+    public void onBtnEditSongSave(ActionEvent actionEvent) throws Exception {
+        Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
+        Song newSong = new Song(txtNewTitle.getText(), txtNewArtist.getText(), txtNewCategory.getValue(), Time.valueOf(txtNewTime.getText()), txtNewFile.getText());
+
+        myTunesModel.editSong(selectedSong, newSong);
+        editSongUIPopUp.setVisible(false);
+
+    }
+
+    public void onBtnEditSong(ActionEvent actionEvent) {
+        editSongUIPopUp.setVisible(true);
+
     }
 }

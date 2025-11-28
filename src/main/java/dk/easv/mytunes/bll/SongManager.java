@@ -45,4 +45,8 @@ public class SongManager {
         myTunesDAO.deleteSongFromPlaylist(song, playlist);
     }
 
+    public void editSong(Song selectedSong, Song newSong) throws Exception{
+        myTunesDAO.editSong(selectedSong, newSong);
+    }
+
 }

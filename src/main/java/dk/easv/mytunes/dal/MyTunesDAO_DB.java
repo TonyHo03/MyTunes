@@ -1,5 +1,6 @@
 package dk.easv.mytunes.dal;
 
+import com.microsoft.sqlserver.jdbc.SQLServerException;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
 import dk.easv.mytunes.be.Playlist;
@@ -426,6 +427,29 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
         } catch (SQLException e) {
             throw new Exception("Fejl under sletning af sang fra databasen", e);
         }
+    }
+
+
+    @Override
+    public void editSong(Song selectedSong, Song newSong) throws Exception{
+        String sql = "UPDATE dbo.Song SET Title = ?, Artist = ?, Category = ?, Duration = ?, FilePath = ? WHERE Id = ?";
+        try (Connection conn = dbConnector.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, newSong.getTitle());
+            pstmt.setString(2, newSong.getArtist());
+            pstmt.setString(3, newSong.getCategory());
+            pstmt.setTime(4, newSong.getDuration());
+            pstmt.setString(5, newSong.getFilePath());
+            pstmt.setInt(6, selectedSong.getId());
+
+            pstmt.execute();
+
+
+        } catch (SQLServerException e) {
+            throw new Exception(e);
+        }
+
     }
 
     @Override

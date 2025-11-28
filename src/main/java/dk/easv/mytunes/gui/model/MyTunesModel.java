@@ -86,4 +86,8 @@ public class MyTunesModel {
         playlistObservableList.setAll(playlistManager.getAllPlaylists());
     }
 
+    public void editSong(Song selectedSong, Song newSong) throws Exception{
+        songManager.editSong(selectedSong, newSong);
+    }
+
 }
