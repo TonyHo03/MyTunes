@@ -13,9 +13,11 @@ public class MyTunesModel {
     private SongManager songManager = new SongManager();
     private ObservableList<Song> songObservableList;
     private ObservableList<Playlist> playlistObservableList;
+    private ObservableList<Song> songObservableList2;
 
     public MyTunesModel() throws Exception {
         songObservableList = FXCollections.observableArrayList();
+        songObservableList2 = FXCollections.observableArrayList();
         playlistObservableList = FXCollections.observableArrayList();
         songObservableList.addAll(songManager.getAllSongs());
         playlistObservableList.addAll(playlistManager.getAllPlaylists());
@@ -46,10 +48,12 @@ public class MyTunesModel {
 
     public void createNewPlaylist(Playlist playlist) throws Exception {
         playlistManager.createPlaylist(playlist);
+
+        playlistObservableList.add(playlist);
     }
 
-    public void savePlaylist(Playlist playlist) throws Exception {
-        playlistManager.editPlaylist(playlist);
+    public void savePlaylist(Playlist oldPlaylist, Playlist newplaylist) throws Exception {
+        playlistManager.editPlaylist(oldPlaylist,newplaylist);
     }
 
     public void deletePlaylist(Playlist playlist) throws Exception {
@@ -59,6 +63,22 @@ public class MyTunesModel {
     }
     public ObservableList<Playlist> getPlaylist() {
         return playlistObservableList;
+    }
+    public void loadPlaylistSongs() throws Exception {
+        songManager.loadSongs();
+    }
+
+    public ObservableList<Song> getSongObservableList2(Playlist playlist) throws Exception {
+        songObservableList2.setAll(playlistManager.getAllSongsFromPlaylist(playlist));;
+        return songObservableList2;
+    }
+
+    public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
+
+        songManager.addSongToPlaylist(song, playlist);
+
+        playlistObservableList.setAll(playlistManager.getAllPlaylists());
+
     }
 
 }
