@@ -223,4 +223,22 @@ public class MainViewController implements Initializable {
         }
 
     }
+
+    @FXML
+    private void onBtnEditSong(ActionEvent actionEvent) {
+
+
+    }
+
+    @FXML
+    private void onBtnEditSongCancel(ActionEvent actionEvent) {
+
+
+    }
+
+    @FXML
+    private void onBtnEditSongSave(ActionEvent actionEvent) {
+
+
+    }
 }

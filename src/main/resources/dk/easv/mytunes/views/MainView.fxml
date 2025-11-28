@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
+<?import java.net.URL?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -295,7 +296,7 @@
             </AnchorPane>
          </header>
       </DialogPane>
-      <Button layoutX="73.0" layoutY="33.0" maxHeight="136.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" prefHeight="136.0" prefWidth="155.0" styleClass="play-button" stylesheets="@../../../../../java/dk/easv/mytunes/style.css">
+      <Button layoutX="73.0" layoutY="33.0" maxHeight="136.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" prefHeight="136.0" prefWidth="155.0" styleClass="play-button" stylesheets="@../css/style.css">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -307,7 +308,7 @@
             </Label>
          </graphic>
       </Button>
-      <Button alignment="CENTER" layoutX="113.0" layoutY="37.0" maxHeight="40.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" prefHeight="136.0" prefWidth="51.0" styleClass="fastforward-button" stylesheets="@../../../../../java/dk/easv/mytunes/style.css">
+      <Button alignment="CENTER" layoutX="113.0" layoutY="37.0" maxHeight="40.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" prefHeight="136.0" prefWidth="51.0" styleClass="fastforward-button">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
@@ -318,8 +319,12 @@
                </font>
             </Text>
          </graphic>
+         <stylesheets>
+            <URL value="@../css/style.css" />
+            <URL value="@../css/style.css" />
+         </stylesheets>
       </Button>
-      <Button alignment="CENTER" layoutX="42.0" layoutY="37.0" maxHeight="40.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" prefHeight="136.0" prefWidth="51.0" styleClass="fastforward-button" stylesheets="@../../../../../java/dk/easv/mytunes/style.css">
+      <Button alignment="CENTER" layoutX="42.0" layoutY="37.0" maxHeight="40.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" prefHeight="136.0" prefWidth="51.0" styleClass="fastforward-button" stylesheets="@../css/style.css">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
@@ -333,7 +338,7 @@
       </Button>
       <ImageView fitHeight="17.0" fitWidth="14.0" layoutX="42.0" layoutY="75.0">
          <image>
-            <Image url="@../../../../../java/dk/easv/mytunes/soundicon.png" />
+            <Image url="@../images/soundicon.png" />
          </image>
       </ImageView>
       <Slider layoutX="54.0" layoutY="77.0" prefHeight="14.0" prefWidth="89.0" value="30.0" />

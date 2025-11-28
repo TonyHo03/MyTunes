@@ -12,6 +12,9 @@ public class Main extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("views/MainView.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 800, 550);
+
+        scene.getStylesheets().add(Main.class.getResource("css/style.css").toExternalForm());
+
         stage.setTitle("MyTunes");
         stage.setScene(scene);
         stage.show();
