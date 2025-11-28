@@ -501,4 +501,43 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
         }
 
     }
+    public void deleteSongFromPlaylist(String song, String playlist) throws Exception {
+        String sql = "DELETE FROM dbo.SongPlaylist WHERE SongId = ? and PlaylistId = ?";
+
+        try (Connection conn = dbConnector.getConnection()) {
+
+            int songId = 0;
+            int playlistId = 0;
+            int rowCount = 0;
+
+            PreparedStatement select1 = conn.prepareStatement("SELECT Id FROM dbo.Song WHERE Title = ?");
+            select1.setString(1, song);
+
+            PreparedStatement select2 = conn.prepareStatement("SELECT Id FROM dbo.Playlist WHERE Name = ?");
+            select2.setString(1, playlist);
+
+            ResultSet rs1 = select1.executeQuery();
+            ResultSet rs2 = select2.executeQuery();
+
+            if (rs1.next()) {
+
+                songId = rs1.getInt("Id");
+
+            }
+
+            if (rs2.next()) {
+
+                playlistId = rs2.getInt("Id");
+
+            }
+
+            PreparedStatement delete = conn.prepareStatement(sql);
+            delete.setInt(1, songId);
+            delete.setInt(2, playlistId);
+            delete.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new Exception("Fejl under sletning af sang fra databasen", e);
+        }
+    }
 }

@@ -229,4 +229,16 @@ public class MainViewController implements Initializable {
         }
 
     }
+
+    public void onDeleteSongPlaylistClick() {
+        try {
+            String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+            String selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem().getName();
+
+            myTunesModel.deleteSongFromPlaylist(selectedSong, selectedPlaylist);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

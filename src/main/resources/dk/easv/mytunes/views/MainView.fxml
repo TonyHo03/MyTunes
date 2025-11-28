@@ -51,7 +51,7 @@
          </font>
       </Button>
       <Button layoutX="220.0" layoutY="511.0" mnemonicParsing="false" text="🢃" />
-      <Button layoutX="296.0" layoutY="511.0" mnemonicParsing="false" text="Delete" />
+      <Button layoutX="296.0" layoutY="511.0" mnemonicParsing="false" onAction="#onDeleteSongPlaylistClick" text="Delete" />
       <Button fx:id="newSong" layoutX="456.0" layoutY="511.0" mnemonicParsing="false" onAction="#btnOnNewSong" text="New..." />
       <Button layoutX="512.0" layoutY="511.0" mnemonicParsing="false" text="Edit..." />
       <Button layoutX="564.0" layoutY="511.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />

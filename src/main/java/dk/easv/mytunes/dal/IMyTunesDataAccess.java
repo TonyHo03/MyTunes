@@ -23,6 +23,8 @@ public interface IMyTunesDataAccess {
 
     void addSongToPlaylist(Song song, Playlist playlist) throws Exception;
 
+    void deleteSongFromPlaylist(String song, String playlist) throws Exception;
+
     List<Song> getAllSongs() throws Exception;
 
     List<Playlist> getAllPlaylists() throws Exception;
