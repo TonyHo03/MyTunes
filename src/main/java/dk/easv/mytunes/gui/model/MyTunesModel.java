@@ -25,6 +25,15 @@ public class MyTunesModel {
 
     public ObservableList<Song> getObservableSongs() {return songObservableList;}
 
+    public ObservableList<Playlist> getPlaylist() {return playlistObservableList;}
+
+    public ObservableList<Song> getSongObservableList2(Playlist playlist) throws Exception {
+
+        songObservableList2.setAll(playlistManager.getAllSongsFromPlaylist(playlist));
+
+        return songObservableList2;
+    }
+
     public void loadSongs() throws Exception {
 
         songManager.loadSongs();
@@ -61,29 +70,32 @@ public class MyTunesModel {
 
         playlistObservableList.remove(playlist);
     }
-    public ObservableList<Playlist> getPlaylist() {
-        return playlistObservableList;
-    }
-    public void loadPlaylistSongs() throws Exception {
-        songManager.loadSongs();
-    }
-
-    public ObservableList<Song> getSongObservableList2(Playlist playlist) throws Exception {
-        songObservableList2.setAll(playlistManager.getAllSongsFromPlaylist(playlist));;
-        return songObservableList2;
-    }
 
     public void addSongToPlaylist(Song song, Playlist playlist) throws Exception {
 
         songManager.addSongToPlaylist(song, playlist);
 
-        playlistObservableList.setAll(playlistManager.getAllPlaylists());
+        songObservableList2.add(song);
 
     }
 
     public void deleteSongFromPlaylist(String song, String playlist) throws Exception {
         songManager.deleteSongFromPlaylist(song, playlist);
-        playlistObservableList.setAll(playlistManager.getAllPlaylists());
+
+        Song foundSong = null;
+
+        for (Song selectedSong: songObservableList2) {
+
+            if (song.equals(selectedSong.getTitle())) {
+
+                foundSong = selectedSong;
+
+            }
+        }
+
+        if (foundSong != null) {
+            songObservableList2.remove(foundSong);
+        }
     }
 
     public void editSong(Song selectedSong, Song newSong) throws Exception{

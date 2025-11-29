@@ -6,11 +6,16 @@ import com.mpatric.mp3agic.UnsupportedTagException;
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.PlaylistSong;
 import dk.easv.mytunes.be.Song;
+import dk.easv.mytunes.bll.util.DurationCalc;
 import dk.easv.mytunes.dal.db.DBConnector;
 
 import java.io.IOException;
 import com.mpatric.mp3agic.Mp3File;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -26,10 +31,38 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
 
     @Override
     public void createSong(Song song) throws Exception {
-        String sql = "INSERT INTO dbo.Song (Title, Artist, Category, Duration, FilePath) VALUES (?, ?, ?, ?, ?)";
+
+        String selectSql = "SELECT * FROM dbo.Song WHERE Title = ?";
+        String insertSql = "INSERT INTO dbo.Song (Title, Artist, Category, Duration, FilePath) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = dbConnector.getConnection()) {
-            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS); {
+
+            PreparedStatement select = conn.prepareStatement(selectSql);
+            select.setString(1, song.getTitle());
+
+            ResultSet results = select.executeQuery();
+
+            if (results.next()) {
+
+                throw new Exception("Song with specified title \"" + song.getTitle() + "\" already exists in the database.");
+
+            }
+
+            Path previous = Paths.get(song.getFilePath());
+            Path targetDir = Paths.get("src/main/resources/dk/easv/mytunes/songs");
+            Path target = targetDir.resolve(previous.getFileName());
+
+            if (!Files.exists(target)) {
+                Path targetFilePath = Files.copy(previous, target, StandardCopyOption.REPLACE_EXISTING);
+
+                song.setFilePath(targetFilePath.toString());
+            } else {
+
+                throw new Exception("Song file already exists in songs directory.");
+
+            }
+
+            PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
 
             ps.setString(1, song.getTitle());
             ps.setString(2, song.getArtist());
@@ -50,10 +83,10 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
                      throw new Exception("Kunne ikke opdatere Song-ID", e);
                  }
             }
-            }
+
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new Exception("Could not create song.");
+            throw new Exception("Could not create song.", e);
         }
     }
 
@@ -80,7 +113,7 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
                 System.out.println("Der er INGEN sange i databasen. Indsætter alle sange.");
 
                 for (File song: songs) {
-                    String timeString = getDuration(song);
+                    String timeString = DurationCalc.getDuration(song);
                     Time time = java.sql.Time.valueOf(timeString);
 
                     String tempTitle = song.getName().split("\\.")[0];
@@ -114,7 +147,7 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
                 if (notFound == rowCount) {
                     System.out.println("Sangen er ikke i databasen: " + rowCount + " " + notFound);
 
-                    Time time = Time.valueOf(getDuration(song));
+                    Time time = Time.valueOf(DurationCalc.getDuration(song));
                     String tempTitle = song.getName().split("\\.")[0];
 
                     createSong(new Song(0, tempTitle, "", "", time, song.getPath()));
@@ -128,18 +161,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
             e.printStackTrace();
             throw new Exception("Could not load songs.");
         }
-    }
-
-    private static String getDuration(File song) throws IOException, UnsupportedTagException, InvalidDataException {
-        Mp3File mp3File = new Mp3File("src/main/resources/dk/easv/mytunes/songs/" + song.getName());
-        double duration = mp3File.getLengthInSeconds();
-
-        int durationInSeconds = (int) duration;
-        int hours = durationInSeconds / 3600;
-        int minutes = (durationInSeconds % 3600) / 60;
-        int seconds = durationInSeconds % 60;
-
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
     @Override
@@ -320,7 +341,7 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
                 if (notFound == rowCount) {
                     System.out.println("Sangen er ikke i databasen: " + rowCount + " " + notFound);
 
-                    Time time = Time.valueOf(getDuration(song));
+                    Time time = Time.valueOf(DurationCalc.getDuration(song));
                     String tempTitle = song.getName().split("\\.")[0];
 
                     createSong(new Song(0, tempTitle, "", "", time, song.getPath()));

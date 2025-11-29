@@ -39,3 +39,5 @@ build/
 .DS_Store
 
 config/config.settings
+src/main/resources/dk/easv/mytunes/songs/*
+!src/main/resources/dk/easv/mytunes/songs/.gitkeep

@@ -46,4 +46,8 @@ public class Playlist {
         this.duration = Duration;
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

@@ -14,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -28,7 +29,7 @@ public class MainViewController implements Initializable {
     @FXML
     private TableView<Song> tblSongs;
     @FXML
-    private ListView<String> lstPlaylistSong;
+    private ListView<Song> lstPlaylistSong;
     @FXML
     private TableColumn<Song, String> titleColumn, artistColumn, categoryColumn, timeColumn;
     @FXML
@@ -89,17 +90,13 @@ public class MainViewController implements Initializable {
         tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
             try {
-                lstPlaylistSong.getItems().clear();
-                for (Song song : myTunesModel.getSongObservableList2(newValue)) {
-                    lstPlaylistSong.getItems().add(song.toString());
-                }
+                lstPlaylistSong.setItems(myTunesModel.getSongObservableList2(newValue));
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
         });
 
-        //lstPlaylistSong.setItems(myTunesModel.getObservableSongs());
     }
 
     @FXML
@@ -155,6 +152,7 @@ public class MainViewController implements Initializable {
             PlaylistViewController controller = fxmlLoader.getController();
             controller.setParentController(this);
             controller.setStage(stage);
+            controller.setModel(myTunesModel);
             stage.show();
         }
         catch (Exception e) {
@@ -164,13 +162,13 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void onDeletePlaylistClick(ActionEvent actionEvent) {
-        Playlist selectedPlaylist = (Playlist) tblPlaylist.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
 
         if  (selectedPlaylist != null) {
             try {
                 myTunesModel.deletePlaylist(selectedPlaylist);
 
-                tblPlaylist.refresh();
+                System.out.println(myTunesModel.getPlaylist());
             }
             catch (Exception e)
             {
@@ -181,7 +179,28 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void btnOnNewSong(ActionEvent actionEvent) {
-        newSongUIPopUp.setVisible(true);
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/dk/easv/mytunes/views/SongView.fxml"));
+            Scene scene = new Scene(fxmlLoader.load());
+            Stage stage = new Stage();
+            stage.setTitle("New/Edit Song");
+
+            stage.initModality(Modality.APPLICATION_MODAL);
+
+            SongViewController controller = fxmlLoader.getController();
+            controller.setParentController(this);
+            controller.setModel(myTunesModel);
+            controller.setStage(stage);
+
+            stage.setScene(scene);
+            stage.show();
+        }
+        catch (Exception e) {
+
+        }
+
+        //newSongUIPopUp.setVisible(true);
+
     }
 
     @FXML
@@ -239,7 +258,7 @@ public class MainViewController implements Initializable {
 
     public void onDeleteSongPlaylistClick() {
         try {
-            String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+            String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem().getTitle();
             String selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem().getName();
 
             myTunesModel.deleteSongFromPlaylist(selectedSong, selectedPlaylist);
@@ -252,7 +271,7 @@ public class MainViewController implements Initializable {
     @FXML
     private void onUpBtnClick() {
 
-        String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+        Song selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
         int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
         int newIndex = (previousIndex > 0) ? previousIndex - 1 : 0;
 
@@ -267,7 +286,7 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void onDownBtnClick() {
-        String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+        Song selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
         int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
         int newIndex = (previousIndex < lstPlaylistSong.getItems().size() - 1) ? previousIndex + 1 : lstPlaylistSong.getItems().size() - 1;
 
