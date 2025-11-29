@@ -290,11 +290,9 @@ public class MainViewController implements Initializable {
 
         myTunesModel.editSong(selectedSong, newSong);
         editSongUIPopUp.setVisible(false);
-
     }
 
     public void onBtnEditSong(ActionEvent actionEvent) {
         editSongUIPopUp.setVisible(true);
-
     }
 }
