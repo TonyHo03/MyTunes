@@ -103,6 +103,10 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
         }
 
         try (Connection conn = dbConnector.getConnection()) {
+            /*
+            PreparedStatement delete = conn.prepareStatement("DELETE FROM dbo.Song");
+
+            int rowsAffected = delete.executeUpdate();*/
 
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM dbo.Song",ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 

@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import java.net.URL?>
-<?import javafx.collections.FXCollections?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.DialogPane?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Slider?>
@@ -16,8 +11,6 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
@@ -47,8 +40,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <Button layoutX="14.0" layoutY="511.0" mnemonicParsing="false" onAction="#onNewPlaylistClick" prefHeight="25.0" prefWidth="51.0" text="New..." />
-      <Button layoutX="73.0" layoutY="511.0" mnemonicParsing="false" text="Edit..." />
+      <Button layoutX="14.0" layoutY="511.0" mnemonicParsing="false" onAction="#onNewPlaylistClick" prefHeight="25.0" prefWidth="73.0" text="New/Edit..." />
       <Button layoutX="125.0" layoutY="511.0" mnemonicParsing="false" onAction="#onDeletePlaylistClick" text="Delete" />
       <Button layoutX="185.0" layoutY="511.0" mnemonicParsing="false" onAction="#onUpBtnClick" scaleShape="false" text="🢁">
          <font>
@@ -57,8 +49,7 @@
       </Button>
       <Button layoutX="220.0" layoutY="511.0" mnemonicParsing="false" onAction="#onDownBtnClick" text="🢃" />
       <Button layoutX="296.0" layoutY="511.0" mnemonicParsing="false" onAction="#onDeleteSongPlaylistClick" text="Delete" />
-      <Button fx:id="newSong" layoutX="456.0" layoutY="511.0" mnemonicParsing="false" onAction="#btnOnNewSong" text="New..." />
-      <Button fx:id="btnEditSong" layoutX="512.0" layoutY="511.0" mnemonicParsing="false" onAction="#onBtnEditSong" text="Edit..." />
+      <Button fx:id="newSong" layoutX="456.0" layoutY="511.0" mnemonicParsing="false" onAction="#btnOnNewSong" text="New/Edit..." />
       <Button layoutX="564.0" layoutY="511.0" mnemonicParsing="false" onAction="#deleteSong" text="Delete" />
       <TextField fx:id="txtFldFilter" layoutX="590.0" layoutY="49.0" />
       <Button fx:id="btnSearch" layoutX="748.0" layoutY="49.0" mnemonicParsing="false" onAction="#onSearchBtnClick" prefHeight="25.0" prefWidth="38.0" text="🔎" />
@@ -66,249 +57,19 @@
       <Label layoutX="14.0" layoutY="133.0" text="Playlist:" />
       <Label layoutX="456.0" layoutY="133.0" text="Songs:" visible="false" />
       <Label layoutX="185.0" layoutY="133.0" text="Songs on Playlist:" />
-      <DialogPane fx:id="newSongUIPopUp" layoutX="351.0" layoutY="144.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="311.0" prefWidth="447.0" visible="false">
-          <header>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0">
-               <children>
-                  <VBox layoutY="5.0" prefHeight="305.0" prefWidth="448.0" style="-fx-border-color: black;">
-                     <children>
-                        <HBox alignment="CENTER" prefHeight="29.0" prefWidth="446.0" style="-fx-border-color: black;">
-                           <children>
-                              <Label text="New song">
-                                 <HBox.margin>
-                                    <Insets top="-10.0" />
-                                 </HBox.margin>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="37.0" prefWidth="361.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="54.0" text="Title: ">
-                                 <HBox.margin>
-                                    <Insets left="30.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="txtTitle" prefHeight="25.0" prefWidth="267.0" />
-                           </children>
-                           <VBox.margin>
-                              <Insets top="20.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox prefHeight="37.0" prefWidth="361.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="54.0" text="Artist:">
-                                 <HBox.margin>
-                                    <Insets left="30.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="txtArtist" prefHeight="25.0" prefWidth="267.0" />
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="37.0" prefWidth="361.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="54.0" text="Category: ">
-                                 <HBox.margin>
-                                    <Insets left="30.0" />
-                                 </HBox.margin>
-                              </Label>
-                               <ChoiceBox fx:id="txtCategory">
-                                   <items>
-                                       <FXCollections fx:factory="observableArrayList">
-                                           <String fx:value="Pop" />
-                                           <String fx:value="Rock" />
-                                           <String fx:value="Jazz" />
-                                       </FXCollections>
-                                   </items>
-                               </ChoiceBox>
-
-                              <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="68.0" text="More">
-                                 <HBox.margin>
-                                    <Insets left="15.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="37.0" prefWidth="361.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="54.0" text="Time:">
-                                 <HBox.margin>
-                                    <Insets left="30.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="txtTime" prefHeight="25.0" prefWidth="130.0" />
-                           </children>
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox prefHeight="37.0" prefWidth="361.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="54.0" text="File:">
-                                 <HBox.margin>
-                                    <Insets left="30.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="txtFile" prefHeight="25.0" prefWidth="267.0" />
-                              <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="64.0" text="Choose...">
-                                 <HBox.margin>
-                                    <Insets left="15.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="30.0" prefWidth="446.0">
-                           <children>
-                              <Button fx:id="btnCancel" mnemonicParsing="false" onAction="#onBtnCancel" prefHeight="25.0" prefWidth="60.0" text="Cancel">
-                                 <HBox.margin>
-                                    <Insets left="310.0" top="10.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button fx:id="btnSave" mnemonicParsing="false" onAction="#onBtnSave" prefHeight="25.0" prefWidth="50.0" text="Save">
-                                 <HBox.margin>
-                                    <Insets left="10.0" top="10.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="29.0" prefWidth="446.0" style="-fx-border-color: black;">
-                           <VBox.margin>
-                              <Insets top="5.0" />
-                           </VBox.margin>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </children>
-            </AnchorPane>
-          </header>
-         
-      </DialogPane>
-      <DialogPane fx:id="editSongUIPopUp" layoutX="361.0" layoutY="154.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="311.0" prefWidth="447.0" visible="false">
-         <header>
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="320.0">
-               <children>
-                  <VBox layoutY="5.0" prefHeight="305.0" prefWidth="448.0" style="-fx-border-color: black;">
-                     <children>
-                        <HBox alignment="CENTER" prefHeight="29.0" prefWidth="446.0" style="-fx-border-color: black;">
-                           <children>
-                              <Label text="Edit song">
-                                 <HBox.margin>
-                                    <Insets top="-10.0" />
-                                 </HBox.margin>
-                              </Label>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="37.0" prefWidth="361.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="54.0" text="Title: ">
-                                 <HBox.margin>
-                                    <Insets left="30.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="txtNewTitle" prefHeight="25.0" prefWidth="267.0" />
-                           </children>
-                           <VBox.margin>
-                              <Insets top="20.0" />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox prefHeight="37.0" prefWidth="361.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="54.0" text="Artist:">
-                                 <HBox.margin>
-                                    <Insets left="30.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="txtNewArtist" prefHeight="25.0" prefWidth="267.0" />
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="37.0" prefWidth="361.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="54.0" text="Category: ">
-                                 <HBox.margin>
-                                    <Insets left="30.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <ChoiceBox fx:id="txtNewCategory">
-                                 <items>
-                                    <FXCollections fx:factory="observableArrayList">
-                                       <String fx:value="Pop" />
-                                       <String fx:value="Rock" />
-                                       <String fx:value="Jazz" />
-                                    </FXCollections>
-                                 </items>
-                              </ChoiceBox>
-                              <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="68.0" text="More">
-                                 <HBox.margin>
-                                    <Insets left="15.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="37.0" prefWidth="361.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="54.0" text="Time:">
-                                 <HBox.margin>
-                                    <Insets left="30.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="txtNewTime" prefHeight="25.0" prefWidth="130.0" />
-                           </children>
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </HBox>
-                        <HBox prefHeight="37.0" prefWidth="361.0">
-                           <children>
-                              <Label prefHeight="17.0" prefWidth="54.0" text="File:">
-                                 <HBox.margin>
-                                    <Insets left="30.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField fx:id="txtNewFile" prefHeight="25.0" prefWidth="267.0" />
-                              <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="64.0" text="Choose...">
-                                 <HBox.margin>
-                                    <Insets left="15.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="30.0" prefWidth="446.0">
-                           <children>
-                              <Button fx:id="btnCancelEditSong" mnemonicParsing="false" onAction="#onBtnEditSongCancel" prefHeight="25.0" prefWidth="60.0" text="Cancel">
-                                 <HBox.margin>
-                                    <Insets left="310.0" top="10.0" />
-                                 </HBox.margin>
-                              </Button>
-                              <Button fx:id="btnEditSongSave" mnemonicParsing="false" onAction="#onBtnEditSongSave" prefHeight="25.0" prefWidth="50.0" text="Save">
-                                 <HBox.margin>
-                                    <Insets left="10.0" top="10.0" />
-                                 </HBox.margin>
-                              </Button>
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="29.0" prefWidth="446.0" style="-fx-border-color: black;">
-                           <VBox.margin>
-                              <Insets top="5.0" />
-                           </VBox.margin>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </children>
-            </AnchorPane>
-         </header>
-      </DialogPane>
-      <Button layoutX="73.0" layoutY="33.0" maxHeight="136.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" prefHeight="136.0" prefWidth="155.0" styleClass="play-button" stylesheets="@../css/style.css">
+      <Button fx:id="btnPlay" layoutX="89.0" layoutY="33.0" maxHeight="136.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" onAction="#onPlayBtnClick" prefHeight="136.0" prefWidth="155.0" styleClass="play-button" stylesheets="@../css/style.css">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
          <graphic>
-            <Label alignment="CENTER" prefHeight="8.0" prefWidth="18.0" text="▶">
+            <Label fx:id="lblPlayBtn" alignment="CENTER" contentDisplay="CENTER" prefHeight="41.0" prefWidth="14.0" text="▶" textOverrun="CLIP">
                <font>
-                  <Font size="34.0" />
+                  <Font size="28.0" />
                </font>
             </Label>
          </graphic>
       </Button>
-      <Button alignment="CENTER" layoutX="113.0" layoutY="37.0" maxHeight="40.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" prefHeight="136.0" prefWidth="51.0" styleClass="fastforward-button">
+      <Button alignment="CENTER" layoutX="129.0" layoutY="37.0" maxHeight="40.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" onAction="#onNextTrackClick" prefHeight="136.0" prefWidth="51.0" styleClass="fastforward-button">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
@@ -324,7 +85,7 @@
             <URL value="@../css/style.css" />
          </stylesheets>
       </Button>
-      <Button alignment="CENTER" layoutX="42.0" layoutY="37.0" maxHeight="40.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" prefHeight="136.0" prefWidth="51.0" styleClass="fastforward-button" stylesheets="@../css/style.css">
+      <Button alignment="CENTER" layoutX="58.0" layoutY="37.0" maxHeight="40.0" maxWidth="155.0" minHeight="17.0" minWidth="16.0" mnemonicParsing="false" onAction="#onPreviousTrackClick" prefHeight="136.0" prefWidth="51.0" styleClass="fastforward-button" stylesheets="@../css/style.css">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
@@ -336,11 +97,17 @@
             </Text>
          </graphic>
       </Button>
-      <ImageView fitHeight="17.0" fitWidth="14.0" layoutX="42.0" layoutY="75.0">
+      <ImageView fitHeight="17.0" fitWidth="14.0" layoutX="14.0" layoutY="76.0">
          <image>
             <Image url="@../images/soundicon.png" />
          </image>
       </ImageView>
-      <Slider layoutX="54.0" layoutY="77.0" prefHeight="14.0" prefWidth="89.0" value="30.0" />
+      <Slider fx:id="sldrPlayback" layoutX="31.0" layoutY="77.0" prefHeight="14.0" prefWidth="149.0" />
+      <Label fx:id="lblCurrentSong" layoutX="292.0" layoutY="74.0" text="Nothing is currently playing.">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Slider fx:id="sldrVolume" layoutX="205.0" layoutY="12.0" orientation="VERTICAL" prefHeight="80.0" prefWidth="14.0" />
    </children>
 </AnchorPane>

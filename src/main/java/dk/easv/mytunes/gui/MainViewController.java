@@ -4,6 +4,7 @@ import dk.easv.mytunes.Main;
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.gui.model.MyTunesModel;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -16,9 +17,17 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
@@ -36,6 +45,16 @@ public class MainViewController implements Initializable {
     private TextField txtFldFilter;
     @FXML
     private Button btnSearch;
+    @FXML
+    private Label lblPlayBtn;
+    @FXML
+    private Label lblCurrentSong;
+    @FXML
+    private Button btnPlay;
+    @FXML
+    private Slider sldrVolume;
+    @FXML
+    private Slider sldrPlayback;
 
 
     public TableView<Playlist> tblPlaylist;
@@ -46,21 +65,23 @@ public class MainViewController implements Initializable {
     @FXML
     private TableColumn<Playlist, Time> clmDuration;
 
-    @FXML
-    private DialogPane newSongUIPopUp;
-
-    @FXML
-    private DialogPane editSongUIPopUp;
-    @FXML
-    private TextField txtTitle, txtArtist, txtTime, txtFile;
-    @FXML
-    private TextField txtNewTitle, txtNewArtist, txtNewTime, txtNewFile;
-    @FXML
-    private ChoiceBox<String> txtNewCategory;
-    @FXML
-    private ChoiceBox<String> txtCategory;
-
     private boolean isFiltering = false;
+
+    private boolean isPlaying = false;
+
+    private Song currentSong = null;
+
+    private Playlist selectedPlaylist;
+
+    private URI uri;
+
+    private Media media;
+
+    private MediaPlayer player;
+
+    private ObservableList<Song> currentSongList = FXCollections.observableArrayList();
+
+    private int currentSongIndex = 0;
 
     public MainViewController() {
         try {
@@ -69,6 +90,19 @@ public class MainViewController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateCurrentSong() {
+
+        currentSong = currentSongList.get(currentSongIndex);
+
+        uri = Paths.get(currentSong.getFilePath()).toUri();
+
+        media = new Media(uri.toString());
+
+        player = new MediaPlayer(media);
+
+
     }
 
 
@@ -90,12 +124,39 @@ public class MainViewController implements Initializable {
         tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
             try {
-                lstPlaylistSong.setItems(myTunesModel.getSongObservableList2(newValue));
+                selectedPlaylist = newValue;
+                if (selectedPlaylist != null) {
+                    currentSongList = myTunesModel.getSongObservableList2(selectedPlaylist);
+                    lstPlaylistSong.setItems(currentSongList);
+                    currentSong = currentSongList.getFirst();
+                }
+                updateCurrentSong();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
         });
+
+        // Lytter til værdiændring af volume-slider, og ændrer lydstyrke baseret på dens nye værdi.
+        sldrVolume.valueProperty().addListener((obs, oldValue, newValue) -> {
+
+            if (player != null) {
+
+                player.setVolume(newValue.doubleValue()/100);
+            }
+
+        });
+        /*
+        sldrPlayback.valueProperty().addListener((obs, oldValue, newValue) -> {
+
+            if (player != null) {
+
+                double durationInSeconds = player.getTotalDuration().toSeconds();
+
+                player.seek(Duration.seconds(durationInSeconds / (newValue.doubleValue()/100)));
+            }
+
+        });*/
 
     }
 
@@ -199,8 +260,6 @@ public class MainViewController implements Initializable {
 
         }
 
-        //newSongUIPopUp.setVisible(true);
-
     }
 
     @FXML
@@ -220,34 +279,18 @@ public class MainViewController implements Initializable {
         stage.show();
     }
 
-
-
-    @FXML
-    private void onBtnCancel(ActionEvent actionEvent) {
-        newSongUIPopUp.setVisible(false);
-    }
-
-    @FXML
-    private void onBtnSave(ActionEvent actionEvent) throws Exception {
-        newSongUIPopUp.setVisible(false);
-
-        try {
-            Song newSong = new Song(txtTitle.getText(), txtArtist.getText(), txtCategory.getValue(), Time.valueOf(txtTime.getText()), txtFile.getText());
-
-            myTunesModel.createSong(newSong);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @FXML
     private void onAddSongToPlaylistClick() {
 
         try {
+
             Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
             Playlist selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
 
-            myTunesModel.addSongToPlaylist(selectedSong, selectedPlaylist);
+            if (selectedSong != null && selectedPlaylist != null) {
+                myTunesModel.addSongToPlaylist(selectedSong, selectedPlaylist);
+            }
+
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -271,47 +314,154 @@ public class MainViewController implements Initializable {
     @FXML
     private void onUpBtnClick() {
 
-        Song selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
-        int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
-        int newIndex = (previousIndex > 0) ? previousIndex - 1 : 0;
+        if (isPlaying) {
+            btnPlay.fire();
+        }
 
-        lstPlaylistSong.getItems().remove(previousIndex);
-        lstPlaylistSong.getItems().add(newIndex, selectedSong);
+        try {
+            Song selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+            int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
+            int newIndex = (previousIndex > 0) ? previousIndex - 1 : 0;
 
-        lstPlaylistSong.getSelectionModel().select(newIndex);
+            currentSongList.remove(previousIndex);
+            currentSongList.add(newIndex, selectedSong);
 
-        lstPlaylistSong.refresh();
+            System.out.println(previousIndex + " : " + newIndex + " - " + selectedSong.getTitle());
+
+            lstPlaylistSong.getSelectionModel().select(newIndex);
+
+            updateCurrentSong();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
     @FXML
     private void onDownBtnClick() {
-        Song selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
-        int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
-        int newIndex = (previousIndex < lstPlaylistSong.getItems().size() - 1) ? previousIndex + 1 : lstPlaylistSong.getItems().size() - 1;
 
-        lstPlaylistSong.getItems().remove(previousIndex);
-        lstPlaylistSong.getItems().add(newIndex, selectedSong);
+        if (isPlaying) {
+            btnPlay.fire();
+        }
 
-        lstPlaylistSong.getSelectionModel().select(newIndex);
+        try {
+            Song selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+            int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
 
-        lstPlaylistSong.refresh();
+            int newIndex = (previousIndex < lstPlaylistSong.getItems().size() - 1) ? previousIndex + 1 : lstPlaylistSong.getItems().size() - 1;
+
+            currentSongList.remove(previousIndex);
+            currentSongList.add(newIndex, selectedSong);
+
+
+            lstPlaylistSong.getSelectionModel().select(newIndex);
+
+            updateCurrentSong();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    @FXML
+    private void onPlayBtnClick() {
 
-    public void onBtnEditSongCancel(ActionEvent actionEvent) {
-        editSongUIPopUp.setVisible(false);
+        if (currentSong == null) {return;}
+
+        isPlaying = !isPlaying;
+
+        if (isPlaying) {
+            System.out.println("Playing");
+            lblPlayBtn.setStyle("-fx-font-size: 24px");
+            lblPlayBtn.setText("⏸");
+            lblCurrentSong.setText(currentSong.toString() + " is currently playing.");
+
+            player.play();
+
+        }
+        else {
+            System.out.println("Paused");
+            lblPlayBtn.setStyle("-fx-font-size: 28px");
+            lblPlayBtn.setText("▶");
+            lblCurrentSong.setText("Nothing is currently playing.");
+
+            player.pause();
+
+        }
+
     }
 
-    public void onBtnEditSongSave(ActionEvent actionEvent) throws Exception {
-        Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-        Song newSong = new Song(txtNewTitle.getText(), txtNewArtist.getText(), txtNewCategory.getValue(), Time.valueOf(txtNewTime.getText()), txtNewFile.getText());
+    @FXML
+    private void onNextTrackClick() {
 
-        myTunesModel.editSong(selectedSong, newSong);
-        editSongUIPopUp.setVisible(false);
+        player.stop();
+
+        if (selectedPlaylist != null) {
+
+            int indexOfSong = 0;
+
+            for (int i = 0; i < currentSongList.size(); i++) {
+
+                    if (currentSong.getTitle().equals(currentSongList.get(i).getTitle())) {
+
+                        indexOfSong = i;
+                        break;
+
+                    }
+
+                }
+
+            if (indexOfSong < currentSongList.size() - 1) {
+
+                currentSongIndex = indexOfSong + 1;
+
+                currentSong = currentSongList.get(currentSongIndex);
+
+                if (isPlaying) {
+                    btnPlay.fire();
+                }
+
+                updateCurrentSong();
+
+            }
+        }
     }
 
-    public void onBtnEditSong(ActionEvent actionEvent) {
-        editSongUIPopUp.setVisible(true);
+    @FXML
+    private void onPreviousTrackClick() {
+
+        player.stop();
+
+        if (selectedPlaylist != null) {
+
+            int indexOfSong = 0;
+
+            for (int i = 0; i < currentSongList.size(); i++) {
+
+                if (currentSong.getTitle().equals(currentSongList.get(i).getTitle())) {
+
+                    indexOfSong = i;
+                    break;
+
+                }
+
+            }
+
+            if (indexOfSong > 0) {
+
+                currentSongIndex = indexOfSong - 1;
+
+                currentSong = currentSongList.get(currentSongIndex);
+
+                if (isPlaying) {
+                    btnPlay.fire();
+                }
+
+                updateCurrentSong();
+
+            }
+
+        }
     }
 }
