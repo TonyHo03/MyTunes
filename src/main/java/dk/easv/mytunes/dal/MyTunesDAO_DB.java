@@ -110,7 +110,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
 
             // Tjekker om der er overhovedet er rækker i resultset. Hvis ikke, så er der ingen sange i databasen.
             if (!rs.next()) {
-                System.out.println("Der er INGEN sange i databasen. Indsætter alle sange.");
 
                 for (File song: songs) {
                     String timeString = DurationCalc.getDuration(song);
@@ -145,7 +144,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
 
                 // Hvis true, så betyder det at sangen ikke fandtes i alle rækker af resultset.
                 if (notFound == rowCount) {
-                    System.out.println("Sangen er ikke i databasen: " + rowCount + " " + notFound);
 
                     Time time = Time.valueOf(DurationCalc.getDuration(song));
                     String tempTitle = song.getName().split("\\.")[0];
@@ -167,7 +165,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
     public void createPlaylist(Playlist playlist) throws Exception {
 
         try (Connection conn = dbConnector.getConnection()){
-            System.out.println("Creating playlist " + playlist.getName());
             PreparedStatement stmt = conn.prepareStatement("INSERT INTO dbo.Playlist (Name, Songs, Duration) Values (?, ?, ?)");
             stmt.setString(1,playlist.getName());
             stmt.setInt(2,playlist.getSongs());
@@ -184,7 +181,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
     @Override
     public void editPlaylist(Playlist oldPlaylist, Playlist newplaylist) throws Exception {
         try (Connection conn = dbConnector.getConnection()){
-            System.out.println("Editing playlist " + oldPlaylist.getName());
             PreparedStatement stmt = conn.prepareStatement("UPDATE dbo.PLaylist SET Name = ? WHERE Name = ?");
             stmt.setString(1,newplaylist.getName());
             stmt.setString(2,oldPlaylist.getName());
@@ -196,7 +192,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
     @Override
     public void  deletePlaylist(Playlist playlist) throws Exception {
         try (Connection conn = dbConnector.getConnection()){
-            System.out.println("Deleting playlist " + playlist.getName());
             int playlistId = 0;
 
             PreparedStatement stmt1 = conn.prepareStatement("SELECT Id FROM dbo.Playlist WHERE Name = ?");
@@ -235,7 +230,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
 
             if (rs.next()) {
                 playlistId = rs.getInt("Id");
-                System.out.println("playlistId: " + playlistId);
             }
 
             PreparedStatement ps2 = conn.prepareStatement("SELECT SongId FROM dbo.SongPlaylist WHERE PlaylistId = ?");
@@ -245,7 +239,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
             while (rs2.next()) {
 
                 int SongId  = rs2.getInt("SongId");
-                System.out.println("SongId: " + SongId);
 
                 songIds.add(SongId);
 
@@ -266,7 +259,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
                 for (int songId : songIds) {
 
                     if(songId == rs3.getInt("Id")) {
-                        System.out.println("Song added");
                         songList.add(new Song(songId, Title, Artist, Category, Duration, FilePath));
 
                     }
@@ -306,7 +298,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
 
             // Tjekker om der er overhovedet er rækker i resultset. Hvis ikke, så er der ingen sange i databasen.
             if (!rs.next()) {
-                System.out.println("Der er INGEN sange i databasen. Indsætter alle sange.");
 
                 for (File song: songs) {
 
@@ -339,7 +330,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
 
                 // Hvis true, så betyder det at sangen ikke fandtes i alle rækker af resultset.
                 if (notFound == rowCount) {
-                    System.out.println("Sangen er ikke i databasen: " + rowCount + " " + notFound);
 
                     Time time = Time.valueOf(DurationCalc.getDuration(song));
                     String tempTitle = song.getName().split("\\.")[0];
@@ -460,16 +450,16 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
 
     @Override
     public void editSong(Song selectedSong, Song newSong) throws Exception{
-        String sql = "UPDATE dbo.Song SET Title = ?, Artist = ?, Category = ?, Duration = ?, FilePath = ? WHERE Id = ?";
+
+        String sql = "UPDATE dbo.Song SET Title = ?, Artist = ?, Category = ? WHERE Id = ?";
+
         try (Connection conn = dbConnector.getConnection()){
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
             pstmt.setString(1, newSong.getTitle());
             pstmt.setString(2, newSong.getArtist());
             pstmt.setString(3, newSong.getCategory());
-            pstmt.setTime(4, newSong.getDuration());
-            pstmt.setString(5, newSong.getFilePath());
-            pstmt.setInt(6, selectedSong.getId());
+            pstmt.setInt(4, selectedSong.getId());
 
             pstmt.execute();
 
@@ -517,7 +507,6 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
             ResultSet condition = setCondition.executeQuery();
 
             if (condition.next()) {
-                System.out.println("Sang findes allerede i playlisten.");
                 return;
             }
 
@@ -527,23 +516,7 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
 
             add.execute();
 
-
-            PreparedStatement selectAmount = conn.prepareStatement("SELECT * FROM dbo.SongPlaylist WHERE PlaylistId = ?");
-            selectAmount.setInt(1, playlistId);
-
-            ResultSet rs3 = selectAmount.executeQuery();
-
-            while (rs3.next()) {
-
-                rowCount++;
-
-            }
-
-            PreparedStatement updatePlaylist = conn.prepareStatement("UPDATE dbo.Playlist SET Songs = ? WHERE Id = ?");
-            updatePlaylist.setInt(1, rowCount);
-            updatePlaylist.setInt(2, playlistId);
-
-            int rowsAffected = updatePlaylist.executeUpdate();
+            updatePlaylistInfo(playlist);
 
 
         } catch (SQLException e) {
@@ -553,20 +526,19 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
         }
 
     }
-    public void deleteSongFromPlaylist(String song, String playlist) throws Exception {
+    public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {
         String sql = "DELETE FROM dbo.SongPlaylist WHERE SongId = ? and PlaylistId = ?";
 
         try (Connection conn = dbConnector.getConnection()) {
 
             int songId = 0;
             int playlistId = 0;
-            int rowCount = 0;
 
             PreparedStatement select1 = conn.prepareStatement("SELECT Id FROM dbo.Song WHERE Title = ?");
-            select1.setString(1, song);
+            select1.setString(1, song.getTitle());
 
             PreparedStatement select2 = conn.prepareStatement("SELECT Id FROM dbo.Playlist WHERE Name = ?");
-            select2.setString(1, playlist);
+            select2.setString(1, playlist.getName());
 
             ResultSet rs1 = select1.executeQuery();
             ResultSet rs2 = select2.executeQuery();
@@ -588,8 +560,51 @@ public class MyTunesDAO_DB implements IMyTunesDataAccess{
             delete.setInt(2, playlistId);
             delete.executeUpdate();
 
+            updatePlaylistInfo(playlist);
+
         } catch (SQLException e) {
             throw new Exception("Fejl under sletning af sang fra databasen", e);
         }
+    }
+
+    @Override
+    public void updatePlaylistInfo(Playlist playlist) throws Exception {
+
+        List<Song> songList = new ArrayList<>();
+        int playlistId = 0;
+
+        try (Connection conn = dbConnector.getConnection()) {
+
+            PreparedStatement selectPlaylist = conn.prepareStatement("SELECT Id FROM dbo.Playlist WHERE Name = ?");
+            selectPlaylist.setString(1, playlist.getName());
+
+            ResultSet rs1 = selectPlaylist.executeQuery();
+
+            if (rs1.next()) {
+                playlistId = rs1.getInt("Id");
+            }
+
+            PreparedStatement selectAmount = conn.prepareStatement("SELECT * FROM dbo.SongPlaylist AS sp JOIN dbo.Song AS s ON sp.SongId = s.Id WHERE sp.PlaylistId = ?");
+            selectAmount.setInt(1, playlistId);
+
+            ResultSet rs2 = selectAmount.executeQuery();
+
+            while (rs2.next()) {
+
+                songList.add(new Song(rs2.getInt("Id"), rs2.getString("Title"), rs2.getString("Artist"), rs2.getString("Category"), rs2.getTime("Duration"), rs2.getString("FilePath")));
+
+            }
+
+            PreparedStatement updatePlaylist = conn.prepareStatement("UPDATE dbo.Playlist SET Songs = ?, Duration = ? WHERE Id = ?");
+            updatePlaylist.setInt(1, songList.size());
+            updatePlaylist.setTime(2, Time.valueOf(DurationCalc.getTotalDuration(songList)));
+            updatePlaylist.setInt(3, playlistId);
+
+            updatePlaylist.executeUpdate();
+
+        }catch (SQLException e) {
+            throw new Exception("Fejl opdatering af playlist", e);
+        }
+
     }
 }

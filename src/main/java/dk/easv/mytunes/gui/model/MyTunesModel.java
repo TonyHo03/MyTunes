@@ -77,16 +77,18 @@ public class MyTunesModel {
 
         songObservableList2.add(song);
 
+        playlistObservableList.setAll(playlistManager.getAllPlaylists());
+
     }
 
-    public void deleteSongFromPlaylist(String song, String playlist) throws Exception {
+    public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {
         songManager.deleteSongFromPlaylist(song, playlist);
 
         Song foundSong = null;
 
         for (Song selectedSong: songObservableList2) {
 
-            if (song.equals(selectedSong.getTitle())) {
+            if (song.getTitle().equals(selectedSong.getTitle())) {
 
                 foundSong = selectedSong;
 
@@ -96,10 +98,14 @@ public class MyTunesModel {
         if (foundSong != null) {
             songObservableList2.remove(foundSong);
         }
+
+        playlistObservableList.setAll(playlistManager.getAllPlaylists());
     }
 
     public void editSong(Song selectedSong, Song newSong) throws Exception{
         songManager.editSong(selectedSong, newSong);
+
+        songObservableList.setAll(songManager.getAllSongs());
     }
 
 }

@@ -1,11 +1,13 @@
 package dk.easv.mytunes.bll.util;
 
 import com.mpatric.mp3agic.Mp3File;
+import dk.easv.mytunes.be.Song;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import java.io.File;
+import java.util.List;
 
 public class DurationCalc {
 
@@ -48,5 +50,26 @@ public class DurationCalc {
             return "00:00:00";
 
         }
+    }
+
+    public static String getTotalDuration(List<Song> songs) throws Exception {
+
+        double duration = 0.0;
+
+        for (Song song: songs) {
+
+            Mp3File mp3File = new Mp3File(song.getFilePath());
+
+            duration += (int) mp3File.getLengthInSeconds();
+
+        }
+
+        int durationInSeconds = (int) duration;
+        int hours = durationInSeconds / 3600;
+        int minutes = (durationInSeconds % 3600) / 60;
+        int seconds = durationInSeconds % 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
     }
 }

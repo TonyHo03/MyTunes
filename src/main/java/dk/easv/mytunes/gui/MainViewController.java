@@ -26,8 +26,8 @@ public class MainViewController implements Initializable {
 
     private MyTunesModel myTunesModel;
 
-    @FXML
-    private TableView<Song> tblSongs;
+
+    public TableView<Song> tblSongs;
     @FXML
     private ListView<Song> lstPlaylistSong;
     @FXML
@@ -258,8 +258,8 @@ public class MainViewController implements Initializable {
 
     public void onDeleteSongPlaylistClick() {
         try {
-            String selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem().getTitle();
-            String selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem().getName();
+            Song selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
+            Playlist selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
 
             myTunesModel.deleteSongFromPlaylist(selectedSong, selectedPlaylist);
         }

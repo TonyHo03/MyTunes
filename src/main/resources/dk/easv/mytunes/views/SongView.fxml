@@ -9,6 +9,8 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <TabPane prefHeight="319.0" prefWidth="310.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.mytunes.gui.SongViewController">
    <tabs>
       <Tab closable="false" text="Add">
@@ -23,8 +25,16 @@
                   <TextField fx:id="txtFldArtist" disable="true" layoutX="75.0" layoutY="133.0" prefHeight="25.0" prefWidth="164.0" />
                   <Label layoutX="32.0" layoutY="137.0" text="Artist:" />
                   <Label layoutX="23.0" layoutY="172.0" text="Category:" />
-                  <ChoiceBox fx:id="cbCategory" disable="true" layoutX="75.0" layoutY="168.0" prefHeight="25.0" prefWidth="54.0" />
-                  <Label layoutX="157.0" layoutY="172.0" text="Duration:" />
+                  <ChoiceBox fx:id="cbCategory" disable="true" layoutX="75.0" layoutY="168.0" prefHeight="25.0" prefWidth="54.0">
+                       <items>
+                           <FXCollections fx:factory="observableArrayList">
+                               <String fx:value="Pop"/>
+                               <String fx:value="Rock"/>
+                               <String fx:value="Jazz"/>
+                           </FXCollections>
+                       </items>
+                  </ChoiceBox>
+                   <Label layoutX="157.0" layoutY="172.0" text="Duration:" />
                   <TextField fx:id="txtFldDuration" disable="true" layoutX="216.0" layoutY="168.0" prefHeight="25.0" prefWidth="74.0" />
                   <Button fx:id="btnAdd" disable="true" layoutX="121.0" layoutY="237.0" mnemonicParsing="false" onAction="#onAddSongClick" text="Add song" />
                   <Line endX="100.0" layoutX="155.0" layoutY="80.0" startX="-100.0" stroke="#a4a4a4" />
@@ -33,7 +43,7 @@
             </AnchorPane>
          </content>
       </Tab>
-      <Tab closable="false" text="Edit">
+      <Tab closable="false" onSelectionChanged="#onEditSelected" text="Edit">
          <content>
             <AnchorPane prefHeight="300.0" prefWidth="310.0">
                <children>
@@ -44,7 +54,15 @@
                   <TextField fx:id="txtFldNewArtist" layoutX="75.0" layoutY="133.0" prefHeight="25.0" prefWidth="164.0" />
                   <Label layoutX="32.0" layoutY="137.0" text="Artist:" />
                   <Label layoutX="23.0" layoutY="172.0" text="Category:" />
-                  <ChoiceBox fx:id="cbNewCategory" layoutX="75.0" layoutY="168.0" prefHeight="25.0" prefWidth="54.0" />
+                  <ChoiceBox fx:id="cbNewCategory" layoutX="75.0" layoutY="168.0" prefHeight="25.0" prefWidth="54.0">
+                      <items>
+                          <FXCollections fx:factory="observableArrayList">
+                              <String fx:value="Pop"/>
+                              <String fx:value="Rock"/>
+                              <String fx:value="Jazz"/>
+                          </FXCollections>
+                      </items>
+                  </ChoiceBox>
                   <Label layoutX="157.0" layoutY="172.0" text="Duration:" />
                   <TextField fx:id="txtFldNewDuration" disable="true" layoutX="216.0" layoutY="168.0" prefHeight="25.0" prefWidth="74.0" />
                   <Button fx:id="btnEditSong" layoutX="122.0" layoutY="237.0" mnemonicParsing="false" onAction="#onEditSongClick" text="Edit song" />

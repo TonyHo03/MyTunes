@@ -32,6 +32,14 @@ public class Song {
 
     }
 
+    public Song(String Title, String Artist, String Category) {
+
+        this.title = Title;
+        this.artist = Artist;
+        this.category = Category;
+
+    }
+
     public int getId() {
         return this.id;
     }
