@@ -11,7 +11,13 @@ public class SongManager {
 
     private IMyTunesDataAccess myTunesDAO = new MyTunesDAO_DB();
 
-    public SongManager() throws Exception {}
+    private PlaylistManager playlistManager;
+
+    public SongManager() throws Exception {
+
+        playlistManager = new PlaylistManager();
+
+    }
 
     public void loadSongs() throws Exception {
 
@@ -31,8 +37,10 @@ public class SongManager {
 
     }
 
-    public void deleteSong(Song song) throws Exception
-    {
+    public void deleteSong(Song song) throws Exception {
+
+        playlistManager.deleteSongFromAllPlaylists(song);
+
         myTunesDAO.deleteSong(song.getId());
     }
 
@@ -41,12 +49,17 @@ public class SongManager {
         myTunesDAO.addSongToPlaylist(song, playlist);
 
     }
+
     public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {
+
         myTunesDAO.deleteSongFromPlaylist(song, playlist);
+
     }
 
     public void editSong(Song selectedSong, Song newSong) throws Exception{
+
         myTunesDAO.editSong(selectedSong, newSong);
+
     }
 
 }

@@ -20,6 +20,15 @@ public class PlaylistManager {
     public void deletePlaylist(Playlist playlist) throws Exception {
         myTunesDAO.deletePlaylist(playlist);
     }
+    public void deleteSongFromPlaylist(Song song, Playlist playlist) throws Exception {
+        myTunesDAO.deleteSongFromPlaylist(song, playlist);
+    }
+    public void deleteSongFromAllPlaylists(Song song) throws Exception {
+        for (Playlist playlist : getAllPlaylists()) {
+            deleteSongFromPlaylist(song, playlist);
+        }
+    }
+
     public List<Playlist> getAllPlaylists() throws Exception {
         return myTunesDAO.getAllPlaylists();
     }

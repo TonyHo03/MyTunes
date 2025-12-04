@@ -53,6 +53,12 @@ public class MyTunesModel {
         songManager.deleteSong(songToBeDeleted);
 
         songObservableList.remove(songToBeDeleted);
+
+        for (Playlist playlist : playlistObservableList) {
+            if (songObservableList2.contains(songToBeDeleted)) {
+                songObservableList2.remove(songToBeDeleted);
+            }
+        }
     }
 
     public void createNewPlaylist(Playlist playlist) throws Exception {
