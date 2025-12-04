@@ -97,17 +97,27 @@
             </Text>
          </graphic>
       </Button>
-      <ImageView fitHeight="17.0" fitWidth="14.0" layoutX="14.0" layoutY="76.0">
+      <ImageView fitHeight="17.0" fitWidth="14.0" layoutX="247.0" layoutY="79.0">
          <image>
             <Image url="@../images/soundicon.png" />
          </image>
       </ImageView>
-      <Slider fx:id="sldrPlayback" layoutX="31.0" layoutY="77.0" prefHeight="14.0" prefWidth="149.0" />
+      <Slider fx:id="sldrPlayback" layoutX="15.0" layoutY="78.0" prefHeight="14.0" prefWidth="162.0" />
       <Label fx:id="lblCurrentSong" layoutX="292.0" layoutY="74.0" text="Nothing is currently playing.">
          <font>
             <Font size="15.0" />
          </font>
       </Label>
-      <Slider fx:id="sldrVolume" layoutX="205.0" layoutY="12.0" orientation="VERTICAL" prefHeight="80.0" prefWidth="14.0" />
+      <Slider fx:id="sldrVolume" layoutX="259.0" layoutY="2.0" orientation="VERTICAL" prefHeight="71.0" prefWidth="14.0" showTickLabels="true" value="100.0" />
+      <Label fx:id="lblTimer" layoutX="177.0" layoutY="76.0" prefHeight="17.0" prefWidth="62.0" text="00:00/00:00">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblCurrentPlaylist" alignment="CENTER" contentDisplay="CENTER" layoutX="292.0" layoutY="51.0" prefHeight="21.0" prefWidth="187.0" text="No playlist is selected">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

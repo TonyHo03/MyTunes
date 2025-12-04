@@ -19,15 +19,14 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
 import javafx.util.Duration;
 
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainViewController implements Initializable {
@@ -55,6 +54,10 @@ public class MainViewController implements Initializable {
     private Slider sldrVolume;
     @FXML
     private Slider sldrPlayback;
+    @FXML
+    private Label lblTimer;
+    @FXML
+    private Label lblCurrentPlaylist;
 
 
     public TableView<Playlist> tblPlaylist;
@@ -83,6 +86,8 @@ public class MainViewController implements Initializable {
 
     private int currentSongIndex = 0;
 
+    private Timeline timeline;
+
     public MainViewController() {
         try {
             myTunesModel = new MyTunesModel();
@@ -93,16 +98,19 @@ public class MainViewController implements Initializable {
     }
 
     private void updateCurrentSong() {
+        if (!currentSongList.isEmpty()) {
+            currentSong = currentSongList.get(currentSongIndex);
 
-        currentSong = currentSongList.get(currentSongIndex);
+            uri = Paths.get(currentSong.getFilePath()).toUri();
 
-        uri = Paths.get(currentSong.getFilePath()).toUri();
+            media = new Media(uri.toString());
 
-        media = new Media(uri.toString());
+            player = new MediaPlayer(media);
 
-        player = new MediaPlayer(media);
-
-
+            if (selectedPlaylist != null) {
+                lblCurrentPlaylist.setText(selectedPlaylist.getName() + ": [" + (currentSongIndex + 1) + "/" + selectedPlaylist.getSongs() + "]");
+            }
+        }
     }
 
 
@@ -124,11 +132,25 @@ public class MainViewController implements Initializable {
         tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
             try {
+                if (isPlaying) {
+                    btnPlay.fire();
+                }
+
                 selectedPlaylist = newValue;
+                currentSong = null;
+                currentSongList.clear();
+
                 if (selectedPlaylist != null) {
+                    currentSongIndex = 0;
                     currentSongList = myTunesModel.getSongObservableList2(selectedPlaylist);
                     lstPlaylistSong.setItems(currentSongList);
-                    currentSong = currentSongList.getFirst();
+                    if (!currentSongList.isEmpty()) {
+                        currentSong = currentSongList.getFirst();
+                    }
+                } else {
+
+                    lblCurrentPlaylist.setText("No playlist is selected");
+
                 }
                 updateCurrentSong();
             } catch (Exception e) {
@@ -136,6 +158,47 @@ public class MainViewController implements Initializable {
             }
 
         });
+
+        timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), e -> {
+
+            if (currentSong != null && selectedPlaylist != null) {
+                double value = (player.getCurrentTime().toSeconds() / player.getStopTime().toSeconds()) * 100;
+
+                System.out.println(value);
+
+                sldrPlayback.setValue(value);
+
+                String currentTime = String.format("%02d:%02d", (int) player.getCurrentTime().toMinutes(), (int) (player.getCurrentTime().toSeconds() % 60));
+                String stopTime = String.format("%02d:%02d", (int) player.getStopTime().toMinutes(), (int) (player.getStopTime().toSeconds() % 60));
+
+                lblTimer.setText(currentTime + "/" + stopTime);
+
+                if (value >= 100.0) {
+
+                    if (currentSongIndex < selectedPlaylist.getSongs() - 1) {
+
+                        currentSongIndex++;
+
+                    } else {
+
+                        currentSongIndex = 0;
+
+                    }
+
+                    updateCurrentSong();
+
+                    lblCurrentSong.setText(currentSong.toString() + " is currently playing.");
+
+                    player.play();
+
+                }
+
+            }
+
+        }));
+
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
 
         // Lytter til værdiændring af volume-slider, og ændrer lydstyrke baseret på dens nye værdi.
         sldrVolume.valueProperty().addListener((obs, oldValue, newValue) -> {
@@ -146,6 +209,33 @@ public class MainViewController implements Initializable {
             }
 
         });
+
+        sldrPlayback.setOnMousePressed(e -> {
+
+            if (timeline != null) {
+
+                if (isPlaying) {
+                    btnPlay.fire();
+                }
+
+                timeline.pause();
+            }
+
+        });
+
+        sldrPlayback.setOnMouseReleased(e -> {
+
+            if (timeline != null) {
+
+                double multiplier = sldrPlayback.getValue() / 100;
+
+                player.seek(Duration.seconds(player.getStopTime().toSeconds() * multiplier));
+
+                timeline.play();
+            }
+
+        });
+
         /*
         sldrPlayback.valueProperty().addListener((obs, oldValue, newValue) -> {
 
