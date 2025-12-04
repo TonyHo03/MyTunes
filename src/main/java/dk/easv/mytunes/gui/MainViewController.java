@@ -109,6 +109,10 @@ public class MainViewController implements Initializable {
 
             if (selectedPlaylist != null) {
                 lblCurrentPlaylist.setText(selectedPlaylist.getName() + ": [" + (currentSongIndex + 1) + "/" + selectedPlaylist.getSongs() + "]");
+            } else {
+
+                lblCurrentPlaylist.setText("All Songs: [" + (currentSongIndex + 1) + "/" + currentSongList.size() + "]");
+
             }
         }
     }
@@ -129,39 +133,73 @@ public class MainViewController implements Initializable {
         tblSongs.setItems(myTunesModel.getObservableSongs());
         tblPlaylist.setItems(myTunesModel.getPlaylist());
 
-        tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        tblSongs.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
 
-            try {
+            if (newValue != null) {
+
                 if (isPlaying) {
                     btnPlay.fire();
                 }
 
-                selectedPlaylist = newValue;
-                currentSong = null;
-                currentSongList.clear();
+                tblPlaylist.getSelectionModel().clearSelection();
 
-                if (selectedPlaylist != null) {
-                    currentSongIndex = 0;
-                    currentSongList = myTunesModel.getSongObservableList2(selectedPlaylist);
-                    lstPlaylistSong.setItems(currentSongList);
-                    if (!currentSongList.isEmpty()) {
-                        currentSong = currentSongList.getFirst();
+                lstPlaylistSong.setItems(null);
+
+                currentSongList.setAll(myTunesModel.getObservableSongs());
+
+                for (int i = 0; i < currentSongList.size(); i++) {
+
+                    if (currentSongList.get(i).getTitle().equals(newValue.getTitle())) {
+
+                        currentSongIndex = i;
+
                     }
-                } else {
-
-                    lblCurrentPlaylist.setText("No playlist is selected");
 
                 }
+
                 updateCurrentSong();
-            } catch (Exception e) {
-                e.printStackTrace();
+
             }
 
         });
 
+        tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+
+            selectedPlaylist = newValue;
+
+            if (newValue != null) {
+
+                tblSongs.getSelectionModel().clearSelection();
+
+                try {
+                    if (isPlaying) {
+                        btnPlay.fire();
+                    }
+                    currentSong = null;
+                    currentSongList.clear();
+
+                    if (selectedPlaylist != null) {
+                        currentSongIndex = 0;
+                        currentSongList.setAll(myTunesModel.getSongObservableList2(selectedPlaylist));
+                        lstPlaylistSong.setItems(currentSongList);
+                        if (!currentSongList.isEmpty()) {
+                            currentSong = currentSongList.getFirst();
+                        }
+                    } else {
+
+                        lblCurrentPlaylist.setText("No playlist is selected");
+
+                    }
+                    updateCurrentSong();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), e -> {
 
-            if (currentSong != null && selectedPlaylist != null) {
+            if (currentSong != null) {
                 double value = (player.getCurrentTime().toSeconds() / player.getStopTime().toSeconds()) * 100;
 
                 System.out.println(value);
@@ -175,7 +213,7 @@ public class MainViewController implements Initializable {
 
                 if (value >= 100.0) {
 
-                    if (currentSongIndex < selectedPlaylist.getSongs() - 1) {
+                    if (currentSongIndex < currentSongList.size() - 1) {
 
                         currentSongIndex++;
 
