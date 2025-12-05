@@ -133,67 +133,66 @@ public class MainViewController implements Initializable {
         tblSongs.setItems(myTunesModel.getObservableSongs());
         tblPlaylist.setItems(myTunesModel.getPlaylist());
 
-        tblSongs.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+        tblSongs.getFocusModel().focusedCellProperty().addListener((obs, oldValue, newValue) -> {
 
-            if (newValue != null) {
+            if (newValue.getRow() == -1) {return;}
 
-                if (isPlaying) {
-                    btnPlay.fire();
+            selectedPlaylist = null;
+
+            Song selectedSong = tblSongs.getItems().get(newValue.getRow());
+
+            System.out.println(selectedSong.getTitle());
+
+            if (isPlaying) {
+                btnPlay.fire();
+            }
+
+            lstPlaylistSong.setItems(null);
+
+            currentSongList.setAll(myTunesModel.getObservableSongs());
+
+            for (int i = 0; i < currentSongList.size(); i++) {
+
+                if (currentSongList.get(i).getTitle().equals(selectedSong.getTitle())) {
+
+                    currentSongIndex = i;
+
                 }
-
-                tblPlaylist.getSelectionModel().clearSelection();
-
-                lstPlaylistSong.setItems(null);
-
-                currentSongList.setAll(myTunesModel.getObservableSongs());
-
-                for (int i = 0; i < currentSongList.size(); i++) {
-
-                    if (currentSongList.get(i).getTitle().equals(newValue.getTitle())) {
-
-                        currentSongIndex = i;
-
-                    }
-
-                }
-
-                updateCurrentSong();
 
             }
 
+            updateCurrentSong();
+
         });
 
-        tblPlaylist.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+        tblPlaylist.getFocusModel().focusedCellProperty().addListener((observable, oldValue, newValue) -> {
 
-            selectedPlaylist = newValue;
+            if (newValue.getRow() == -1) {return;}
 
-            if (newValue != null) {
+            selectedPlaylist = tblPlaylist.getItems().get(newValue.getRow());
 
-                tblSongs.getSelectionModel().clearSelection();
-
-                try {
-                    if (isPlaying) {
-                        btnPlay.fire();
-                    }
-                    currentSong = null;
-                    currentSongList.clear();
-
-                    if (selectedPlaylist != null) {
-                        currentSongIndex = 0;
-                        currentSongList.setAll(myTunesModel.getSongObservableList2(selectedPlaylist));
-                        lstPlaylistSong.setItems(currentSongList);
-                        if (!currentSongList.isEmpty()) {
-                            currentSong = currentSongList.getFirst();
-                        }
-                    } else {
-
-                        lblCurrentPlaylist.setText("No playlist is selected");
-
-                    }
-                    updateCurrentSong();
-                } catch (Exception e) {
-                    e.printStackTrace();
+            try {
+                if (isPlaying) {
+                    btnPlay.fire();
                 }
+                currentSong = null;
+                currentSongList.clear();
+
+                if (selectedPlaylist != null) {
+                    currentSongIndex = 0;
+                    currentSongList.setAll(myTunesModel.getSongObservableList2(selectedPlaylist));
+                    lstPlaylistSong.setItems(currentSongList);
+                    if (!currentSongList.isEmpty()) {
+                        currentSong = currentSongList.getFirst();
+                    }
+                } else {
+
+                    lblCurrentPlaylist.setText("No playlist is selected");
+
+                }
+                updateCurrentSong();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 
@@ -201,8 +200,6 @@ public class MainViewController implements Initializable {
 
             if (currentSong != null) {
                 double value = (player.getCurrentTime().toSeconds() / player.getStopTime().toSeconds()) * 100;
-
-                System.out.println(value);
 
                 sldrPlayback.setValue(value);
 
@@ -274,18 +271,6 @@ public class MainViewController implements Initializable {
 
         });
 
-        /*
-        sldrPlayback.valueProperty().addListener((obs, oldValue, newValue) -> {
-
-            if (player != null) {
-
-                double durationInSeconds = player.getTotalDuration().toSeconds();
-
-                player.seek(Duration.seconds(durationInSeconds / (newValue.doubleValue()/100)));
-            }
-
-        });*/
-
     }
 
     @FXML
@@ -351,7 +336,7 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void onDeletePlaylistClick(ActionEvent actionEvent) {
-        Playlist selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
+        Playlist selectedPlaylist = tblPlaylist.getFocusModel().getFocusedItem();
 
         if  (selectedPlaylist != null) {
             try {
@@ -400,7 +385,7 @@ public class MainViewController implements Initializable {
 
         DeleteSongViewController controller = fxmlLoader.getController();
         controller.setParentController(this);
-        controller.setSongToDelete(tblSongs.getSelectionModel().getSelectedItem());
+        controller.setSongToDelete(tblSongs.getFocusModel().getFocusedItem());
         controller.setModel(myTunesModel);
         controller.setStage(stage);
 
@@ -412,8 +397,8 @@ public class MainViewController implements Initializable {
 
         try {
 
-            Song selectedSong = tblSongs.getSelectionModel().getSelectedItem();
-            Playlist selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
+            Song selectedSong = tblSongs.getFocusModel().getFocusedItem();
+            Playlist selectedPlaylist = tblPlaylist.getFocusModel().getFocusedItem();
 
             if (selectedSong != null && selectedPlaylist != null) {
                 myTunesModel.addSongToPlaylist(selectedSong, selectedPlaylist);
@@ -429,8 +414,8 @@ public class MainViewController implements Initializable {
 
     public void onDeleteSongPlaylistClick() {
         try {
-            Song selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
-            Playlist selectedPlaylist = tblPlaylist.getSelectionModel().getSelectedItem();
+            Song selectedSong = lstPlaylistSong.getFocusModel().getFocusedItem();
+            Playlist selectedPlaylist = tblPlaylist.getFocusModel().getFocusedItem();
 
             myTunesModel.deleteSongFromPlaylist(selectedSong, selectedPlaylist);
         }
@@ -447,8 +432,8 @@ public class MainViewController implements Initializable {
         }
 
         try {
-            Song selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
-            int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
+            Song selectedSong = lstPlaylistSong.getFocusModel().getFocusedItem();
+            int previousIndex = lstPlaylistSong.getFocusModel().getFocusedIndex();
             int newIndex = (previousIndex > 0) ? previousIndex - 1 : 0;
 
             currentSongList.remove(previousIndex);
@@ -456,7 +441,7 @@ public class MainViewController implements Initializable {
 
             System.out.println(previousIndex + " : " + newIndex + " - " + selectedSong.getTitle());
 
-            lstPlaylistSong.getSelectionModel().select(newIndex);
+            lstPlaylistSong.getFocusModel().focus(newIndex);
 
             updateCurrentSong();
         }
@@ -474,8 +459,8 @@ public class MainViewController implements Initializable {
         }
 
         try {
-            Song selectedSong = lstPlaylistSong.getSelectionModel().getSelectedItem();
-            int previousIndex = lstPlaylistSong.getSelectionModel().getSelectedIndex();
+            Song selectedSong = lstPlaylistSong.getFocusModel().getFocusedItem();
+            int previousIndex = lstPlaylistSong.getFocusModel().getFocusedIndex();
 
             int newIndex = (previousIndex < lstPlaylistSong.getItems().size() - 1) ? previousIndex + 1 : lstPlaylistSong.getItems().size() - 1;
 
@@ -483,7 +468,7 @@ public class MainViewController implements Initializable {
             currentSongList.add(newIndex, selectedSong);
 
 
-            lstPlaylistSong.getSelectionModel().select(newIndex);
+            lstPlaylistSong.getFocusModel().focus(newIndex);
 
             updateCurrentSong();
         }
