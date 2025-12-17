@@ -1,9 +1,11 @@
 package dk.easv.mytunes.gui.model;
 
+//project imports
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.bll.PlaylistManager;
 import dk.easv.mytunes.bll.SongManager;
+//java imports
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

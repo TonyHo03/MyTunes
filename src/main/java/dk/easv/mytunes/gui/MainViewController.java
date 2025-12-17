@@ -1,10 +1,10 @@
 package dk.easv.mytunes.gui;
 
-import dk.easv.mytunes.Main;
+//project imports
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.gui.model.MyTunesModel;
-
+//java imports
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -22,7 +22,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
 import javafx.util.Duration;
-
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Paths;

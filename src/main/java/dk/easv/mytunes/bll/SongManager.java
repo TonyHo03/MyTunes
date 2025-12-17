@@ -1,10 +1,12 @@
 package dk.easv.mytunes.bll;
 
+//project imports
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.dal.IMyTunesDataAccess;
 import dk.easv.mytunes.dal.MyTunesDAO_DB;
 
+//java import
 import java.util.List;
 
 public class SongManager {

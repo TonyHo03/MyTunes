@@ -1,15 +1,14 @@
 package dk.easv.mytunes.gui;
 
-import dk.easv.mytunes.be.Playlist;
+//project imports
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.gui.model.MyTunesModel;
+//java imports
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
-import javafx.scene.control.TextField;
-
 import javax.swing.*;
-import java.sql.Time;
+
 
 public class DeleteSongViewController {
 

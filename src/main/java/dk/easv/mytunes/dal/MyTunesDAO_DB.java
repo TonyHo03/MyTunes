@@ -1,5 +1,6 @@
 package dk.easv.mytunes.dal;
 
+//project imports
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.UnsupportedTagException;
@@ -9,6 +10,7 @@ import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.bll.util.DurationCalc;
 import dk.easv.mytunes.dal.db.DBConnector;
 
+//java imports
 import java.io.IOException;
 import com.mpatric.mp3agic.Mp3File;
 import java.io.File;

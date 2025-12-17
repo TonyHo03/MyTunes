@@ -1,8 +1,10 @@
 package dk.easv.mytunes.bll.util;
 
+//project imports
 import com.mpatric.mp3agic.Mp3File;
 import dk.easv.mytunes.be.Song;
 
+//java imports
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;

@@ -1,8 +1,10 @@
 package dk.easv.mytunes.dal.db;
 
+//project imports
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 
+//java imports
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

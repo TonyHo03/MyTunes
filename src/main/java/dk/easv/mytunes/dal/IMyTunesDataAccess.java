@@ -1,9 +1,11 @@
 package dk.easv.mytunes.dal;
 
+//project imports
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.PlaylistSong;
 import dk.easv.mytunes.be.Song;
 
+//java import
 import java.util.List;
 
 public interface IMyTunesDataAccess {

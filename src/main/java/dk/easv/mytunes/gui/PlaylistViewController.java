@@ -1,8 +1,9 @@
 package dk.easv.mytunes.gui;
-
+//project imports
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.gui.model.MyTunesModel;
-import javafx.event.ActionEvent;
+
+//java imports
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
 import javafx.scene.control.TextField;

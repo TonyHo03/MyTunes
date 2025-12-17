@@ -1,21 +1,18 @@
 package dk.easv.mytunes.gui;
-
+//project imports
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.bll.util.DurationCalc;
 import dk.easv.mytunes.gui.model.MyTunesModel;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+//java imports
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class SongViewController {
 
