@@ -47,6 +47,9 @@ public class DeleteSongViewController {
     @FXML
     private void onDeleteSongfileClick(ActionEvent actionEvent) {
         try {
+            if (parent != null) {
+                parent.stopPlayback();
+            }
             myTunesModel.deleteSong(songToDelete);
         } catch (Exception e) {
             e.printStackTrace();

@@ -374,6 +374,19 @@ public class MainViewController implements Initializable {
 
     }
 
+    //Stopper den aktive player og gør ressourcer redigerbare
+    public void stopPlayback() {
+        if (player != null) {
+            try {
+                player.stop();
+            } catch (Exception ignored) {}
+            try {
+                player.dispose();
+            } catch (Exception ignored) {}
+            player = null;
+        }
+    }
+
     @FXML
     private void deleteSong(ActionEvent event) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/dk/easv/mytunes/views/DeleteSongView.fxml"));
